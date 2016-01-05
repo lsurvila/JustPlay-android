@@ -9,7 +9,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+
 public class MainActivity extends AppCompatActivity {
+
+    private JustPlayApi justPlayApi;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        justPlayApi = new JustPlayApi();
     }
 
     @Override
@@ -30,6 +36,14 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public boolean onQueryTextSubmit(String query) {
                     Toast.makeText(getBaseContext(), query, Toast.LENGTH_SHORT).show();
+                    justPlayApi.search(query)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(searchResponses -> {
+                                System.out.println();
+                            }, error -> {
+                                System.out.println();
+                            });
                     return false;
                 }
 
