@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
                             .subscribe(searchResponses -> {
                                 fragment.updateGrid(searchResponses);
                             }, error -> {
-                                System.out.println();
+
                             });
                     return false;
                 }
