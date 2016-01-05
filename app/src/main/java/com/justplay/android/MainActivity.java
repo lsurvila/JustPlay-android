@@ -15,6 +15,7 @@ import rx.schedulers.Schedulers;
 public class MainActivity extends AppCompatActivity {
 
     private JustPlayApi justPlayApi;
+    private MainActivityFragment fragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         justPlayApi = new JustPlayApi();
+        fragment = (MainActivityFragment) getSupportFragmentManager().findFragmentById(R.id.fragment);
     }
 
     @Override
@@ -40,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(searchResponses -> {
-                                System.out.println();
+                                fragment.updateGrid(searchResponses);
                             }, error -> {
                                 System.out.println();
                             });
