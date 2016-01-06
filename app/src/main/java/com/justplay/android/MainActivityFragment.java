@@ -13,6 +13,8 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class MainActivityFragment extends Fragment {
 
@@ -24,15 +26,28 @@ public class MainActivityFragment extends Fragment {
     public MainActivityFragment() {
     }
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        JustPlayApi api = new JustPlayApi();
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         ButterKnife.bind(this, view);
         GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 3);
         mediaGrid.setLayoutManager(layoutManager);
         adapter = new MediaItemAdapter();
-        adapter.setOnItemClickListener(position -> Toast.makeText(getContext(), adapter.getItem(position).getTitle(), Toast.LENGTH_SHORT).show());
+        adapter.setOnItemClickListener(position -> {
+            SearchResponse item = adapter.getItem(position);
+            Toast.makeText(getContext(), "Downloading " + item.getTitle(), Toast.LENGTH_SHORT).show();
+            api.download(item.getId())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(file -> {
+                        Toast.makeText(getContext(), "Downloaded to " + file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
+                    }, error -> {
+                        Toast.makeText(getContext(), error.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                    });
+        });
         mediaGrid.setAdapter(adapter);
         return view;
     }

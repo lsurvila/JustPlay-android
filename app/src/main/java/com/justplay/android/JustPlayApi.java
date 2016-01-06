@@ -3,10 +3,6 @@ package com.justplay.android;
 import android.content.Context;
 import android.os.Environment;
 
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -21,6 +17,7 @@ import rx.Observable;
 class JustPlayApi {
 
     private static final String BASE_URL = "http://justplay-web.com";
+    private static final String DOWNLOAD_PATH = "video/download?id=";
     private final JustPlayService service;
 
     public JustPlayApi() {
@@ -36,26 +33,22 @@ class JustPlayApi {
         return service.search(query);
     }
 
-    public Observable<File> downloadMediaFile(Context context, String fileUrl, String fileName) {
-        return Observable.create(subscriber -> {
-            OkHttpClient client = new OkHttpClient();
-            File file = new File(context.getExternalFilesDir(Environment.DIRECTORY_MUSIC), fileName);
-            Request request = new Request.Builder().url(fileUrl).build();
-            Response response;
-            try {
-                response = client.newCall(request).execute();
-                if (!response.isSuccessful()) {
-                    throw new IOException();
-                }
-                BufferedSink sink = Okio.buffer(Okio.sink(file));
-                sink.writeAll(response.body().source());
-                sink.close();
-                subscriber.onNext(file);
-                subscriber.onCompleted();
-            } catch (IOException io) {
-                subscriber.onError(io);
-            }
-        });
+    public Observable<File> download(String id) {
+        return service.download(id)
+                .map(response -> {
+                    File file = null;
+                    try {
+                        String header = response.headers().get("Content-Disposition");
+                        String fileName = header.replace("attachment; filename=", "");
+                        file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getAbsoluteFile(), fileName);
+                        BufferedSink sink = Okio.buffer(Okio.sink(file));
+                        sink.writeAll(response.body().source());
+                        sink.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    return file;
+                });
     }
 
 }
