@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -31,6 +32,7 @@ public class MainActivityFragment extends Fragment {
         GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 3);
         mediaGrid.setLayoutManager(layoutManager);
         adapter = new MediaItemAdapter();
+        adapter.setOnItemClickListener(position -> Toast.makeText(getContext(), adapter.getItem(position).getTitle(), Toast.LENGTH_SHORT).show());
         mediaGrid.setAdapter(adapter);
         return view;
     }
