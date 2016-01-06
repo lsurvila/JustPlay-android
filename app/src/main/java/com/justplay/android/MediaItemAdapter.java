@@ -31,6 +31,8 @@ public class MediaItemAdapter extends RecyclerView.Adapter<MediaItemAdapter.View
         ImageView mediaImageView;
         @Bind(R.id.media_title)
         TextView mediaTitleView;
+        @Bind(R.id.media_downloading)
+        View progressView;
 
         private final OnItemClickListener listener;
 
@@ -64,6 +66,7 @@ public class MediaItemAdapter extends RecyclerView.Adapter<MediaItemAdapter.View
                 .crossFade()
                 .into(holder.mediaImageView);
         holder.mediaTitleView.setText(item.getTitle());
+        holder.progressView.setVisibility(item.isDownloading() ? View.VISIBLE : View.INVISIBLE);
     }
 
     public SearchResponse getItem(int position) {

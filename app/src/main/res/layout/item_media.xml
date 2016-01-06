@@ -26,4 +26,11 @@
         android:textColor="@android:color/primary_text_dark"
         tools:text="Test"/>
 
+    <ProgressBar
+        android:id="@+id/media_downloading"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="48dp"
+        android:visibility="invisible"/>
+
 </com.justplay.android.SquareFrameLayout>

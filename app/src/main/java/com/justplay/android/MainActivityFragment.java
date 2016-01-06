@@ -20,6 +20,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import rx.subscriptions.CompositeSubscription;
 
 public class MainActivityFragment extends Fragment {
 
@@ -28,9 +29,11 @@ public class MainActivityFragment extends Fragment {
     RecyclerView mediaGrid;
 
     private JustPlayApi api;
-    private SearchResponse requestedItem;
+    private int requestedItemPosition;
 
     private MediaItemAdapter adapter;
+
+    private final CompositeSubscription subscription = new CompositeSubscription();
 
     public MainActivityFragment() {
     }
@@ -46,15 +49,15 @@ public class MainActivityFragment extends Fragment {
         mediaGrid.setLayoutManager(layoutManager);
         adapter = new MediaItemAdapter();
         adapter.setOnItemClickListener(position -> {
-            requestedItem = adapter.getItem(position);
-            int permissionCheck = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            requestedItemPosition = position;
+            int permissionCheck = ContextCompat.checkSelfPermission(MainActivityFragment.this.getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
             if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
-                downloadMediaItem(requestedItem);
+                MainActivityFragment.this.downloadMediaItem(requestedItemPosition);
             } else {
-                if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                    showPermissionWarning();
+                if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivityFragment.this.getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                    MainActivityFragment.this.showPermissionWarning();
                 } else {
-                    requestPermissions(new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST);
+                    MainActivityFragment.this.requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST);
                 }
             }
         });
@@ -71,23 +74,30 @@ public class MainActivityFragment extends Fragment {
         switch (requestCode) {
             case PERMISSION_REQUEST:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    downloadMediaItem(requestedItem);
+                    downloadMediaItem(requestedItemPosition);
                 } else {
                     showPermissionWarning();
                 }
         }
     }
 
-    private void downloadMediaItem(SearchResponse item) {
+    private void downloadMediaItem(int posision) {
+        SearchResponse item = adapter.getItem(posision);
+        adapter.notifyItemChanged(posision);
+        item.setIsDownloading(true);
         Toast.makeText(getContext(), "Downloading " + item.getTitle(), Toast.LENGTH_SHORT).show();
-        api.download(item.getId())
+        subscription.add(api.download(item.getId())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(file -> {
+                    item.setIsDownloading(false);
+                    adapter.notifyItemChanged(posision);
                     Toast.makeText(getContext(), "Downloaded to " + file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
                 }, error -> {
+                    item.setIsDownloading(false);
+                    adapter.notifyItemChanged(posision);
                     Toast.makeText(getContext(), error.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-                });
+                }));
     }
 
     public void updateGrid(List<SearchResponse> mediaItems) {
@@ -100,5 +110,11 @@ public class MainActivityFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         ButterKnife.unbind(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        subscription.unsubscribe();
     }
 }

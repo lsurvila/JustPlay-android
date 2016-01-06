@@ -9,6 +9,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -16,6 +17,7 @@ public class MainActivity extends AppCompatActivity {
 
     private JustPlayApi justPlayApi;
     private MainActivityFragment fragment;
+    private Subscription subscription;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +25,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
         justPlayApi = new JustPlayApi();
         fragment = (MainActivityFragment) getSupportFragmentManager().findFragmentById(R.id.fragment);
     }
@@ -38,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
                 searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                     @Override
                     public boolean onQueryTextSubmit(String query) {
-                        justPlayApi.search(query)
+                        subscription = justPlayApi.search(query)
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(searchResponses -> {
@@ -59,5 +64,13 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (subscription != null) {
+            subscription.unsubscribe();
+        }
     }
 }

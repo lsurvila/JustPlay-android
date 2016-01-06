@@ -27,4 +27,14 @@ class SearchResponse {
         return imageUrl;
     }
 
+    private boolean isDownloading;
+
+    public boolean isDownloading() {
+        return isDownloading;
+    }
+
+    public void setIsDownloading(boolean isDownloading) {
+        this.isDownloading = isDownloading;
+    }
+
 }
