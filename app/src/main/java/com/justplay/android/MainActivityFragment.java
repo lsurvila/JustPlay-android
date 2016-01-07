@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -18,9 +19,9 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-import rx.subscriptions.CompositeSubscription;
 
 public class MainActivityFragment extends Fragment {
 
@@ -33,7 +34,7 @@ public class MainActivityFragment extends Fragment {
 
     private MediaItemAdapter adapter;
 
-    private final CompositeSubscription subscription = new CompositeSubscription();
+    private Subscription subscription;
 
     public MainActivityFragment() {
     }
@@ -85,19 +86,18 @@ public class MainActivityFragment extends Fragment {
         SearchResponse item = adapter.getItem(posision);
         adapter.notifyItemChanged(posision);
         item.setIsDownloading(true);
-        Toast.makeText(getContext(), "Downloading " + item.getTitle(), Toast.LENGTH_SHORT).show();
-        subscription.add(api.download(item.getId())
+        subscription = api.download(item.getId())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(file -> {
                     item.setIsDownloading(false);
                     adapter.notifyItemChanged(posision);
-                    Toast.makeText(getContext(), "Downloaded to " + file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
+                    Snackbar.make(mediaGrid, "Downloaded to " + file.getAbsolutePath(), Snackbar.LENGTH_SHORT).show();
                 }, error -> {
                     item.setIsDownloading(false);
                     adapter.notifyItemChanged(posision);
                     Toast.makeText(getContext(), error.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-                }));
+                });
     }
 
     public void updateGrid(List<SearchResponse> mediaItems) {
@@ -113,8 +113,10 @@ public class MainActivityFragment extends Fragment {
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        subscription.unsubscribe();
+    public void onDestroy() {
+        super.onDestroy();
+        if (subscription != null) {
+            subscription.unsubscribe();
+        }
     }
 }
