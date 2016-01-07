@@ -20,8 +20,7 @@ import rx.Observable;
 
 class JustPlayApi {
 
-    private static final String BASE_URL = "http://justplay-web.com";
-    private static final String DOWNLOAD_PATH = "video/download?id=";
+    private static final String BASE_URL = "http://murmuring-harbor-8639.herokuapp.com";
     private final JustPlayService service;
 
     public JustPlayApi() {
