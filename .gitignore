@@ -68,3 +68,8 @@ proguard\
 
 # Report files
 /app/manifest-merger-release-report.txt
+
+# Don't commit key stores
+*.keystore
+*.jks
+signing.properties

@@ -22,15 +22,32 @@ android {
         versionCode 1
         versionName "1.0"
     }
+
+    signingConfigs {
+        release {
+            def Properties properties = new Properties()
+            def propFile = file("../signing.properties")
+            properties.load(new FileInputStream(propFile))
+
+            storeFile file("keystore.jks")
+            storePassword properties["STORE_PASSWORD"]
+            keyAlias properties["KEY_ALIAS"]
+            keyPassword properties["KEY_PASSWORD"]
+        }
+    }
     buildTypes {
         release {
-            minifyEnabled true
+            //minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'),
                     'config/proguard/proguard-butterknife.pro',
                     'config/proguard/proguard-glide.pro',
                     'config/proguard/proguard-retrofit.pro',
-                    'config/proguard/proguard-retrolambda.pro'
+                    'config/proguard/proguard-retrolambda.pro',
+                    'config/proguard/proguard-okio.pro',
+                    'config/proguard/proguard-rxjava.pro',
+                    'config/proguard/proguard-appcompat.pro',
+                    'config/proguard/proguard-design-support.pro'
         }
     }
 

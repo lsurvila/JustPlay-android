@@ -1,0 +1,5 @@
+-dontwarn rx.internal.util.unsafe.**
+-keep class rx.android.** { *; }
+-keep interface rx.android.** { *; }
+-keep class rx.** { *; }
+-keep interface rx.** { *; }
