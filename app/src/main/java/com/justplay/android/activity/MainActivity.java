@@ -1,7 +1,6 @@
 package com.justplay.android.activity;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -13,17 +12,18 @@ import com.jakewharton.rxbinding.support.v7.widget.RxSearchView;
 import com.justplay.android.fragment.MainActivityFragment;
 import com.justplay.android.R;
 import com.justplay.android.network.JustPlayApi;
+import com.trello.rxlifecycle.ActivityEvent;
+import com.trello.rxlifecycle.RxLifecycle;
+import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
 
 import rx.Observable;
-import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends RxAppCompatActivity {
 
     private JustPlayApi justPlayApi;
     private MainActivityFragment fragment;
-    private Subscription subscription;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
                             return Observable.empty();
                         })
                         .observeOn(AndroidSchedulers.mainThread())
+                        .compose(RxLifecycle.bindUntilActivityEvent(lifecycle(), ActivityEvent.DESTROY))
                         .subscribe(searchResponses -> {
                             if (fragment != null) {
                                 fragment.updateGrid(searchResponses);
@@ -67,11 +68,4 @@ public class MainActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (subscription != null) {
-            subscription.unsubscribe();
-        }
-    }
 }

@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,16 +18,18 @@ import com.justplay.android.adapter.MediaItemAdapter;
 import com.justplay.android.R;
 import com.justplay.android.network.JustPlayApi;
 import com.justplay.android.network.response.SearchResponse;
+import com.trello.rxlifecycle.FragmentEvent;
+import com.trello.rxlifecycle.RxLifecycle;
+import com.trello.rxlifecycle.components.support.RxFragment;
 
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public class MainActivityFragment extends Fragment {
+public class MainActivityFragment extends RxFragment {
 
     private static final int PERMISSION_REQUEST = 1;
     @Bind(R.id.media_grid)
@@ -38,8 +39,6 @@ public class MainActivityFragment extends Fragment {
     private int requestedItemPosition;
 
     private MediaItemAdapter adapter;
-
-    private Subscription subscription;
 
     public MainActivityFragment() {
     }
@@ -91,9 +90,10 @@ public class MainActivityFragment extends Fragment {
         SearchResponse item = adapter.getItem(posision);
         adapter.notifyItemChanged(posision);
         item.setIsDownloading(true);
-        subscription = api.download(item.getId())
+        api.download(item.getId())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+                .compose(RxLifecycle.bindUntilFragmentEvent(lifecycle(), FragmentEvent.DESTROY))
                 .subscribe(file -> {
                     item.setIsDownloading(false);
                     adapter.notifyItemChanged(posision);
@@ -115,13 +115,5 @@ public class MainActivityFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         ButterKnife.unbind(this);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (subscription != null) {
-            subscription.unsubscribe();
-        }
     }
 }
