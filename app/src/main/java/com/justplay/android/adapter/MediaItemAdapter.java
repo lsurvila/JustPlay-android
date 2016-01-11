@@ -1,4 +1,4 @@
-package com.justplay.android;
+package com.justplay.android.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -9,6 +9,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.justplay.android.R;
+import com.justplay.android.network.response.SearchResponse;
 
 import java.util.ArrayList;
 import java.util.List;

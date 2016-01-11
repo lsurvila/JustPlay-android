@@ -1,9 +1,9 @@
-package com.justplay.android;
+package com.justplay.android.network.response;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-class SearchResponse {
+public class SearchResponse {
 
     @SerializedName("id")
     @Expose

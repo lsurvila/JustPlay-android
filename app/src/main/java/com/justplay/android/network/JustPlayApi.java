@@ -1,7 +1,8 @@
-package com.justplay.android;
+package com.justplay.android.network;
 
 import android.os.Environment;
 
+import com.justplay.android.network.response.SearchResponse;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.ResponseBody;
 import com.squareup.okhttp.logging.HttpLoggingInterceptor;
@@ -18,7 +19,7 @@ import retrofit.Retrofit;
 import retrofit.RxJavaCallAdapterFactory;
 import rx.Observable;
 
-class JustPlayApi {
+public class JustPlayApi {
 
     private static final String BASE_URL = "http://murmuring-harbor-8639.herokuapp.com";
     private final JustPlayService service;

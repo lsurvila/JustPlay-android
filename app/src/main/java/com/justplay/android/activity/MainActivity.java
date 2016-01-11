@@ -1,4 +1,4 @@
-package com.justplay.android;
+package com.justplay.android.activity;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -8,6 +8,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
+
+import com.justplay.android.fragment.MainActivityFragment;
+import com.justplay.android.R;
+import com.justplay.android.network.JustPlayApi;
 
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;

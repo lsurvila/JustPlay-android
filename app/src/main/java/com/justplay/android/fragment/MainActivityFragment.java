@@ -1,4 +1,4 @@
-package com.justplay.android;
+package com.justplay.android.fragment;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -14,6 +14,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
+import com.justplay.android.adapter.MediaItemAdapter;
+import com.justplay.android.R;
+import com.justplay.android.network.JustPlayApi;
+import com.justplay.android.network.response.SearchResponse;
 
 import java.util.List;
 
