@@ -9,10 +9,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.jakewharton.rxbinding.support.v7.widget.RxSearchView;
 import com.justplay.android.fragment.MainActivityFragment;
 import com.justplay.android.R;
 import com.justplay.android.network.JustPlayApi;
 
+import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -44,27 +46,22 @@ public class MainActivity extends AppCompatActivity {
         if (searchItem != null) {
             final SearchView searchView = (SearchView) searchItem.getActionView();
             if (searchView != null) {
-                searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-                    @Override
-                    public boolean onQueryTextSubmit(String query) {
-                        subscription = justPlayApi.search(query)
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(searchResponses -> {
-                                    if (fragment != null) {
-                                        fragment.updateGrid(searchResponses);
-                                    }
-                                }, error -> {
-                                    Toast.makeText(MainActivity.this, error.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-                                });
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onQueryTextChange(String newText) {
-                        return false;
-                    }
-                });
+                RxSearchView.queryTextChangeEvents(searchView)
+                        .flatMap(event -> {
+                            if (event.isSubmitted()) {
+                                return justPlayApi.search(event.queryText().toString())
+                                        .subscribeOn(Schedulers.io());
+                            }
+                            return Observable.empty();
+                        })
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(searchResponses -> {
+                            if (fragment != null) {
+                                fragment.updateGrid(searchResponses);
+                            }
+                        }, error -> {
+                            Toast.makeText(MainActivity.this, error.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                        });
             }
         }
         return super.onCreateOptionsMenu(menu);
