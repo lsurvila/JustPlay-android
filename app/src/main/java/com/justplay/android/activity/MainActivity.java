@@ -13,8 +13,8 @@ import com.justplay.android.fragment.MainActivityFragment;
 import com.justplay.android.R;
 import com.justplay.android.network.JustPlayApi;
 import com.justplay.android.network.response.SearchResponse;
-import com.justplay.android.presenter.MediaGridPresenter;
-import com.justplay.android.view.MediaGridView;
+import com.justplay.android.presenter.MediaSearchPresenter;
+import com.justplay.android.view.MediaSearchView;
 import com.trello.rxlifecycle.ActivityEvent;
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
 
@@ -22,9 +22,9 @@ import java.util.List;
 
 import rx.Observable;
 
-public class MainActivity extends RxAppCompatActivity implements MediaGridView {
+public class MainActivity extends RxAppCompatActivity implements MediaSearchView {
 
-    private MediaGridPresenter presenter;
+    private MediaSearchPresenter presenter;
     private MainActivityFragment fragment;
 
     @Override
@@ -37,7 +37,7 @@ public class MainActivity extends RxAppCompatActivity implements MediaGridView {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
         JustPlayApi justPlayApi = new JustPlayApi();
-        presenter = new MediaGridPresenter(this, justPlayApi);
+        presenter = new MediaSearchPresenter(this, justPlayApi);
         fragment = (MainActivityFragment) getSupportFragmentManager().findFragmentById(R.id.fragment);
     }
 

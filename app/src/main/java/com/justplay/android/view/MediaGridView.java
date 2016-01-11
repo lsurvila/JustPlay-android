@@ -1,14 +1,9 @@
 package com.justplay.android.view;
 
-import com.justplay.android.network.response.SearchResponse;
-import com.trello.rxlifecycle.ActivityEvent;
+import com.trello.rxlifecycle.FragmentEvent;
 
-import java.util.List;
-
-import rx.Observable;
-
-public interface MediaGridView {
-    void updateGrid(List<SearchResponse> searchResponses);
+public interface MediaGridView extends RxLifecycleView<FragmentEvent> {
+    void invalidateItemState(int position);
+    void showSnackbar(String message);
     void showToast(String message);
-    Observable<ActivityEvent> getLifecycle();
 }

@@ -16,8 +16,11 @@ import android.widget.Toast;
 
 import com.justplay.android.adapter.MediaItemAdapter;
 import com.justplay.android.R;
+import com.justplay.android.adapter.OnItemClickListener;
 import com.justplay.android.network.JustPlayApi;
 import com.justplay.android.network.response.SearchResponse;
+import com.justplay.android.presenter.MediaGridPresenter;
+import com.justplay.android.view.MediaGridView;
 import com.trello.rxlifecycle.FragmentEvent;
 import com.trello.rxlifecycle.RxLifecycle;
 import com.trello.rxlifecycle.components.support.RxFragment;
@@ -26,10 +29,11 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public class MainActivityFragment extends RxFragment {
+public class MainActivityFragment extends RxFragment implements OnItemClickListener, MediaGridView {
 
     private static final int PERMISSION_REQUEST = 1;
     @Bind(R.id.media_grid)
@@ -39,35 +43,36 @@ public class MainActivityFragment extends RxFragment {
     private int requestedItemPosition;
 
     private MediaItemAdapter adapter;
-
-    public MainActivityFragment() {
-    }
-
+    private MediaGridPresenter presenter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         api = new JustPlayApi();
+        presenter = new MediaGridPresenter(this, api);
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         ButterKnife.bind(this, view);
         GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 3);
         mediaGrid.setLayoutManager(layoutManager);
         adapter = new MediaItemAdapter();
-        adapter.setOnItemClickListener(position -> {
-            requestedItemPosition = position;
-            int permissionCheck = ContextCompat.checkSelfPermission(MainActivityFragment.this.getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
-            if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
-                MainActivityFragment.this.downloadMediaItem(requestedItemPosition);
-            } else {
-                if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivityFragment.this.getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                    MainActivityFragment.this.showPermissionWarning();
-                } else {
-                    MainActivityFragment.this.requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST);
-                }
-            }
-        });
+        adapter.setOnItemClickListener(this);
         mediaGrid.setAdapter(adapter);
         return view;
+    }
+
+    @Override
+    public void onItemClicked(int position) {
+        requestedItemPosition = position;
+        int permissionCheck = ContextCompat.checkSelfPermission(MainActivityFragment.this.getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+            presenter.downloadMediaItem(position, adapter.getItem(position));
+        } else {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivityFragment.this.getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                showPermissionWarning();
+            } else {
+                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST);
+            }
+        }
     }
 
     private void showPermissionWarning() {
@@ -84,6 +89,26 @@ public class MainActivityFragment extends RxFragment {
                     showPermissionWarning();
                 }
         }
+    }
+
+    @Override
+    public void invalidateItemState(int position) {
+        adapter.notifyItemChanged(position);
+    }
+
+    @Override
+    public void showSnackbar(String message) {
+        Snackbar.make(mediaGrid, message, Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showToast(String message) {
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public Observable<FragmentEvent> getLifecycle() {
+        return lifecycle();
     }
 
     private void downloadMediaItem(int posision) {
@@ -116,4 +141,9 @@ public class MainActivityFragment extends RxFragment {
         super.onDestroyView();
         ButterKnife.unbind(this);
     }
+
+    public interface GridFragmentCallbacks {
+        void onItemClicked(int position);
+    }
+
 }
