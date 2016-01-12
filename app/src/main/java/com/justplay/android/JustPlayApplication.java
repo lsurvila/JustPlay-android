@@ -18,5 +18,5 @@ public class JustPlayApplication extends Application {
     public ApplicationComponent getComponent() {
         return component;
     }
-    
+
 }
