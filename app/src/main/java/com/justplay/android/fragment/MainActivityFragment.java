@@ -63,11 +63,11 @@ public class MainActivityFragment extends RxFragment implements OnItemClickListe
     @Override
     public void onItemClicked(int position) {
         requestedItemPosition = position;
-        int permissionCheck = ContextCompat.checkSelfPermission(MainActivityFragment.this.getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int permissionCheck = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
             presenter.downloadMediaItem(position, adapter.getItem(position));
         } else {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivityFragment.this.getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                 showPermissionWarning();
             } else {
                 requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST);
