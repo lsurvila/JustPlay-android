@@ -14,15 +14,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.justplay.android.JustPlayApplication;
+import com.justplay.android.component.DaggerMediaDownloadComponent;
+import com.justplay.android.component.MediaDownloadComponent;
+import com.justplay.android.module.MediaDownloadModule;
 import com.justplay.android.view.adapter.MediaItemAdapter;
 import com.justplay.android.R;
 import com.justplay.android.view.adapter.OnItemClickListener;
-import com.justplay.android.network.JustPlayApi;
 import com.justplay.android.network.response.SearchResponse;
-import com.justplay.android.presenter.MediaGridPresenter;
+import com.justplay.android.presenter.MediaDownloadPresenter;
 import com.justplay.android.view.MediaGridView;
 import com.trello.rxlifecycle.FragmentEvent;
-import com.trello.rxlifecycle.RxLifecycle;
 import com.trello.rxlifecycle.components.support.RxFragment;
 
 import java.util.List;
@@ -30,8 +32,6 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 public class MainActivityFragment extends RxFragment implements OnItemClickListener, MediaGridView {
 
@@ -39,17 +39,28 @@ public class MainActivityFragment extends RxFragment implements OnItemClickListe
     @Bind(R.id.media_grid)
     RecyclerView mediaGrid;
 
-    private JustPlayApi api;
     private int requestedItemPosition;
 
     private MediaItemAdapter adapter;
-    private MediaGridPresenter presenter;
+    private MediaDownloadPresenter presenter;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        injectDependencies();
+    }
+
+    private void injectDependencies() {
+        MediaDownloadComponent mediaComponent = DaggerMediaDownloadComponent.builder()
+                .applicationComponent(JustPlayApplication.component())
+                .mediaDownloadModule(new MediaDownloadModule(this))
+                .build();
+        presenter = mediaComponent.downloadPresenter();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        api = new JustPlayApi();
-        presenter = new MediaGridPresenter(this, api);
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         ButterKnife.bind(this, view);
         GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 3);
@@ -84,7 +95,7 @@ public class MainActivityFragment extends RxFragment implements OnItemClickListe
         switch (requestCode) {
             case PERMISSION_REQUEST:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    downloadMediaItem(requestedItemPosition);
+                    presenter.downloadMediaItem(requestedItemPosition, adapter.getItem(requestedItemPosition));
                 } else {
                     showPermissionWarning();
                 }
@@ -109,25 +120,6 @@ public class MainActivityFragment extends RxFragment implements OnItemClickListe
     @Override
     public Observable<FragmentEvent> getLifecycle() {
         return lifecycle();
-    }
-
-    private void downloadMediaItem(int posision) {
-        SearchResponse item = adapter.getItem(posision);
-        adapter.notifyItemChanged(posision);
-        item.setIsDownloading(true);
-        api.download(item.getId())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .compose(RxLifecycle.bindUntilFragmentEvent(lifecycle(), FragmentEvent.DESTROY))
-                .subscribe(file -> {
-                    item.setIsDownloading(false);
-                    adapter.notifyItemChanged(posision);
-                    Snackbar.make(mediaGrid, "Downloaded to " + file.getAbsolutePath(), Snackbar.LENGTH_SHORT).show();
-                }, error -> {
-                    item.setIsDownloading(false);
-                    adapter.notifyItemChanged(posision);
-                    Toast.makeText(getContext(), error.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-                });
     }
 
     public void updateGrid(List<SearchResponse> mediaItems) {

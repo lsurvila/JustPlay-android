@@ -2,10 +2,6 @@ package com.justplay.android;
 
 import android.app.Application;
 
-import com.justplay.android.dagger.ApplicationComponent;
-import com.justplay.android.dagger.ApplicationModule;
-import com.justplay.android.dagger.DaggerApplicationComponent;
-
 public class JustPlayApplication extends Application {
 
     private static ApplicationComponent component;

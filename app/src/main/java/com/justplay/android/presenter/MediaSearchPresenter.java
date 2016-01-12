@@ -18,7 +18,7 @@ public class MediaSearchPresenter {
     private final MediaSearchView view;
 
     @Inject
-    public MediaSearchPresenter(JustPlayApi api, MediaSearchView view) {
+    public MediaSearchPresenter(MediaSearchView view, JustPlayApi api) {
         this.api = api;
         this.view = view;
     }

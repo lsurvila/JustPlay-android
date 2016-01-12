@@ -6,15 +6,18 @@ import com.justplay.android.view.MediaGridView;
 import com.trello.rxlifecycle.FragmentEvent;
 import com.trello.rxlifecycle.RxLifecycle;
 
+import javax.inject.Inject;
+
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public class MediaGridPresenter {
+public class MediaDownloadPresenter {
 
     private final MediaGridView view;
     private final JustPlayApi api;
 
-    public MediaGridPresenter(MediaGridView view, JustPlayApi api) {
+    @Inject
+    public MediaDownloadPresenter(MediaGridView view, JustPlayApi api) {
         this.view = view;
         this.api = api;
     }

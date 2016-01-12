@@ -1,4 +1,4 @@
-package com.justplay.android.dagger;
+package com.justplay.android;
 
 import com.justplay.android.JustPlayApplication;
 import com.justplay.android.network.JustPlayApi;
