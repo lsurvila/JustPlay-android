@@ -8,7 +8,12 @@ import javax.inject.Singleton;
 import dagger.Component;
 
 @Singleton
-@Component(modules = {NetworkModule.class, MediaSearchModule.class})
+@Component(
+        modules = {
+                NetworkModule.class,
+                MediaSearchModule.class
+        }
+)
 public interface MediaSearchComponent {
-    void injectPresenter(MediaSearchPresenter presenter);
+    MediaSearchPresenter presenter();
 }

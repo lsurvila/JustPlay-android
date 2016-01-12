@@ -13,6 +13,7 @@ import com.justplay.android.DaggerMediaSearchComponent;
 import com.justplay.android.MediaSearchModule;
 import com.justplay.android.MediaSearchComponent;
 import com.justplay.android.R;
+import com.justplay.android.network.NetworkModule;
 import com.justplay.android.network.response.SearchResponse;
 import com.justplay.android.presenter.MediaSearchPresenter;
 import com.justplay.android.view.MediaSearchView;
@@ -22,13 +23,11 @@ import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
 
 import java.util.List;
 
-import javax.inject.Inject;
-
 import rx.Observable;
 
 public class MainActivity extends RxAppCompatActivity implements MediaSearchView {
 
-    @Inject MediaSearchPresenter presenter;
+    private MediaSearchPresenter presenter;
     private MainActivityFragment fragment;
 
     @Override
@@ -45,11 +44,11 @@ public class MainActivity extends RxAppCompatActivity implements MediaSearchView
     }
 
     private void injectDependencies() {
-        presenter = new MediaSearchPresenter();
         MediaSearchComponent component = DaggerMediaSearchComponent.builder()
+                .networkModule(new NetworkModule()) // implicit
                 .mediaSearchModule(new MediaSearchModule(this))
                 .build();
-        component.injectPresenter(presenter);
+        presenter = component.presenter();
     }
 
     @Override

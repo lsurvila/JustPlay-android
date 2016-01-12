@@ -1,5 +1,7 @@
 package com.justplay.android;
 
+import com.justplay.android.network.JustPlayApi;
+import com.justplay.android.presenter.MediaSearchPresenter;
 import com.justplay.android.view.MediaSearchView;
 
 import dagger.Module;
@@ -17,6 +19,11 @@ public class MediaSearchModule {
     @Provides
     MediaSearchView provideMediaSearchView() {
         return view;
+    }
+
+    @Provides
+    MediaSearchPresenter provideMediaSearchPresenter(MediaSearchView view, JustPlayApi api) {
+        return new MediaSearchPresenter(api, view);
     }
 
 }
