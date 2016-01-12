@@ -21,11 +21,13 @@ import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import rx.Observable;
 
 public class MainActivity extends RxAppCompatActivity implements MediaSearchView {
 
-    private MediaSearchPresenter presenter;
+    @Inject MediaSearchPresenter presenter;
     private MainActivityFragment fragment;
 
     @Override
