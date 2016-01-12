@@ -1,4 +1,4 @@
-package com.justplay.android;
+package com.justplay.android.network;
 
 import com.justplay.android.presenter.MediaSearchPresenter;
 

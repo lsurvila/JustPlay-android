@@ -1,4 +1,4 @@
-package com.justplay.android.fragment;
+package com.justplay.android.view.fragment;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -14,9 +14,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.justplay.android.adapter.MediaItemAdapter;
+import com.justplay.android.view.adapter.MediaItemAdapter;
 import com.justplay.android.R;
-import com.justplay.android.adapter.OnItemClickListener;
+import com.justplay.android.view.adapter.OnItemClickListener;
 import com.justplay.android.network.JustPlayApi;
 import com.justplay.android.network.response.SearchResponse;
 import com.justplay.android.presenter.MediaGridPresenter;

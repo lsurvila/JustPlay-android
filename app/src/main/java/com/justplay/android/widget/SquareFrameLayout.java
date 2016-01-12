@@ -21,7 +21,7 @@ public class SquareFrameLayout extends FrameLayout {
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public SquareFrameLayout(Context context, AttributeSet attrs,         int defStyleAttr, int defStyleRes) {
+    public SquareFrameLayout(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 

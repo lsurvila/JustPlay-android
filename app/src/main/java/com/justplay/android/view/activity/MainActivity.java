@@ -1,4 +1,4 @@
-package com.justplay.android.activity;
+package com.justplay.android.view.activity;
 
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
@@ -9,13 +9,13 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.jakewharton.rxbinding.support.v7.widget.RxSearchView;
-import com.justplay.android.DaggerNetworkComponent;
-import com.justplay.android.NetworkComponent;
-import com.justplay.android.fragment.MainActivityFragment;
+import com.justplay.android.network.DaggerNetworkComponent;
+import com.justplay.android.network.NetworkComponent;
 import com.justplay.android.R;
 import com.justplay.android.network.response.SearchResponse;
 import com.justplay.android.presenter.MediaSearchPresenter;
 import com.justplay.android.view.MediaSearchView;
+import com.justplay.android.view.fragment.MainActivityFragment;
 import com.trello.rxlifecycle.ActivityEvent;
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
 

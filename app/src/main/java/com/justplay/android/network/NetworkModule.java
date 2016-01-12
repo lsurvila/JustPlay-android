@@ -1,6 +1,4 @@
-package com.justplay.android;
-
-import com.justplay.android.network.JustPlayApi;
+package com.justplay.android.network;
 
 import javax.inject.Singleton;
 
