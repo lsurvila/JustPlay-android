@@ -15,11 +15,7 @@ import rx.schedulers.Schedulers;
 public class MediaSearchPresenter {
 
     @Inject JustPlayApi api;
-    private final MediaSearchView view;
-
-    public MediaSearchPresenter(MediaSearchView view) {
-        this.view = view;
-    }
+    @Inject MediaSearchView view;
 
     // TODO on error will stop chain, resolve
     public void searchMediaOnSubmit(Observable<SearchViewQueryTextEvent> queryTextEvents) {
