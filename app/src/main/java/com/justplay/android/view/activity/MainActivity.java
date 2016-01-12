@@ -9,11 +9,11 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.jakewharton.rxbinding.support.v7.widget.RxSearchView;
-import com.justplay.android.DaggerMediaSearchComponent;
-import com.justplay.android.MediaSearchModule;
-import com.justplay.android.MediaSearchComponent;
+import com.justplay.android.JustPlayApplication;
+import com.justplay.android.dagger.DaggerMediaSearchComponent;
+import com.justplay.android.dagger.MediaSearchModule;
+import com.justplay.android.dagger.MediaSearchComponent;
 import com.justplay.android.R;
-import com.justplay.android.network.NetworkModule;
 import com.justplay.android.network.response.SearchResponse;
 import com.justplay.android.presenter.MediaSearchPresenter;
 import com.justplay.android.view.MediaSearchView;
@@ -45,7 +45,7 @@ public class MainActivity extends RxAppCompatActivity implements MediaSearchView
 
     private void injectDependencies() {
         MediaSearchComponent component = DaggerMediaSearchComponent.builder()
-                .networkModule(new NetworkModule()) // implicit
+                .applicationComponent(JustPlayApplication.component())
                 .mediaSearchModule(new MediaSearchModule(this))
                 .build();
         presenter = component.presenter();
