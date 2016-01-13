@@ -27,7 +27,6 @@ public class PermissionManager {
         }
     }
 
-    @Inject
     public void setCallback(Callback callback) {
         this.callback = callback;
     }

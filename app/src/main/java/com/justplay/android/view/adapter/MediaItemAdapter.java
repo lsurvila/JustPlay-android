@@ -86,7 +86,6 @@ public class MediaItemAdapter extends RecyclerView.Adapter<MediaItemAdapter.View
         this.mediaItems = mediaItems;
     }
 
-    @Inject
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.listener = listener;
     }
