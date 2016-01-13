@@ -15,8 +15,6 @@ import com.justplay.android.network.response.SearchResponse;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;

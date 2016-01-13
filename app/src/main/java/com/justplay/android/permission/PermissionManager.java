@@ -7,9 +7,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 
-import javax.inject.Inject;
-
-
 public class PermissionManager {
 
     private static final int PERMISSION_REQUEST = 1;
