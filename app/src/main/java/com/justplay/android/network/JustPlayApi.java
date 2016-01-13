@@ -48,7 +48,7 @@ public class JustPlayApi {
                 .flatMap(this::saveFile);
     }
 
-    public Observable<File> saveFile(Response<ResponseBody> response) {
+    private Observable<File> saveFile(Response<ResponseBody> response) {
         return Observable.create((Observable.OnSubscribe<File>) subscriber -> {
             try {
                 String header = response.headers().get("Content-Disposition");

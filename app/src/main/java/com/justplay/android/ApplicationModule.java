@@ -1,6 +1,5 @@
 package com.justplay.android;
 
-import com.justplay.android.JustPlayApplication;
 import com.justplay.android.network.JustPlayApi;
 
 import javax.inject.Singleton;
@@ -9,9 +8,9 @@ import dagger.Module;
 import dagger.Provides;
 
 @Module
-public class ApplicationModule {
+class ApplicationModule {
 
-    private JustPlayApplication application;
+    private final JustPlayApplication application;
 
     public ApplicationModule(JustPlayApplication application) {
         this.application = application;
