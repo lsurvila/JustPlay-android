@@ -15,6 +15,8 @@ import com.justplay.android.network.response.SearchResponse;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -84,6 +86,7 @@ public class MediaItemAdapter extends RecyclerView.Adapter<MediaItemAdapter.View
         this.mediaItems = mediaItems;
     }
 
+    @Inject
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.listener = listener;
     }

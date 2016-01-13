@@ -48,6 +48,8 @@ public class MainActivityFragment extends RxFragment implements OnItemClickListe
                 .applicationComponent(JustPlayApplication.component())
                 .mediaDownloadModule(new MediaDownloadModule(this))
                 .build();
+        adapter = mediaComponent.adapter();
+        adapter.setOnItemClickListener(this);
         presenter = mediaComponent.downloadPresenter();
     }
 
@@ -58,8 +60,6 @@ public class MainActivityFragment extends RxFragment implements OnItemClickListe
         ButterKnife.bind(this, view);
         GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 3);
         mediaGrid.setLayoutManager(layoutManager);
-        adapter = new MediaItemAdapter();
-        adapter.setOnItemClickListener(this);
         mediaGrid.setAdapter(adapter);
         return view;
     }

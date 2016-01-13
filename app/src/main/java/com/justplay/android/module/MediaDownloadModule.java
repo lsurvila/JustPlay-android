@@ -5,6 +5,7 @@ import com.justplay.android.scope.MediaScope;
 import com.justplay.android.network.JustPlayApi;
 import com.justplay.android.presenter.MediaDownloadPresenter;
 import com.justplay.android.view.MediaGridView;
+import com.justplay.android.view.adapter.MediaItemAdapter;
 
 import dagger.Module;
 import dagger.Provides;
@@ -21,6 +22,11 @@ public class MediaDownloadModule {
     @Provides @MediaScope
     MediaGridView provideMediaGridView() {
         return view;
+    }
+
+    @Provides @MediaScope
+    MediaItemAdapter provideMediaItemAdapter() {
+        return new MediaItemAdapter();
     }
 
     @Provides @MediaScope

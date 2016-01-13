@@ -4,6 +4,7 @@ import com.justplay.android.ApplicationComponent;
 import com.justplay.android.module.MediaDownloadModule;
 import com.justplay.android.presenter.MediaDownloadPresenter;
 import com.justplay.android.scope.MediaScope;
+import com.justplay.android.view.adapter.MediaItemAdapter;
 
 import dagger.Component;
 
@@ -14,4 +15,5 @@ import dagger.Component;
 )
 public interface MediaDownloadComponent {
     MediaDownloadPresenter downloadPresenter();
+    MediaItemAdapter adapter();
 }
