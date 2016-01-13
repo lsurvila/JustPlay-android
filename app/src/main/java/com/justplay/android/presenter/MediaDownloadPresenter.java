@@ -1,7 +1,7 @@
 package com.justplay.android.presenter;
 
+import com.justplay.android.model.MediaItemViewModel;
 import com.justplay.android.network.JustPlayApi;
-import com.justplay.android.network.response.SearchResponse;
 import com.justplay.android.permission.PermissionManager;
 import com.justplay.android.view.MediaGridView;
 import com.trello.rxlifecycle.FragmentEvent;
@@ -18,7 +18,7 @@ public class MediaDownloadPresenter implements PermissionManager.Callback {
     private final JustPlayApi api;
     private final PermissionManager permissionManager;
 
-    private SearchResponse requestedItem;
+    private MediaItemViewModel requestedItem;
     private int requestedItemPosition;
 
     @Inject
@@ -29,7 +29,7 @@ public class MediaDownloadPresenter implements PermissionManager.Callback {
         this.permissionManager.setCallback(this);
     }
 
-    private void downloadMediaItem(int position, SearchResponse item) {
+    private void downloadMediaItem(int position, MediaItemViewModel item) {
         item.setIsDownloading(true);
         view.invalidateItemState(position);
         api.download(item.getId())
@@ -48,7 +48,7 @@ public class MediaDownloadPresenter implements PermissionManager.Callback {
     }
 
 
-    public void requestDownload(int position, SearchResponse item) {
+    public void requestDownload(int position, MediaItemViewModel item) {
         requestedItemPosition = position;
         requestedItem = item;
         permissionManager.requestPermissionIfNeeded();

@@ -13,11 +13,11 @@ import android.widget.Toast;
 import com.justplay.android.JustPlayApplication;
 import com.justplay.android.component.DaggerMediaDownloadComponent;
 import com.justplay.android.component.MediaDownloadComponent;
+import com.justplay.android.model.MediaItemViewModel;
 import com.justplay.android.module.MediaDownloadModule;
 import com.justplay.android.view.adapter.MediaItemAdapter;
 import com.justplay.android.R;
 import com.justplay.android.view.adapter.OnItemClickListener;
-import com.justplay.android.network.response.SearchResponse;
 import com.justplay.android.presenter.MediaDownloadPresenter;
 import com.justplay.android.view.MediaGridView;
 import com.trello.rxlifecycle.FragmentEvent;
@@ -94,7 +94,7 @@ public class MainActivityFragment extends RxFragment implements OnItemClickListe
         return lifecycle();
     }
 
-    public void updateGrid(List<SearchResponse> mediaItems) {
+    public void updateGrid(List<MediaItemViewModel> mediaItems) {
         adapter.update(mediaItems);
         adapter.notifyDataSetChanged();
     }

@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.justplay.android.R;
-import com.justplay.android.network.response.SearchResponse;
+import com.justplay.android.model.MediaItemViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +21,7 @@ import butterknife.OnClick;
 
 public class MediaItemAdapter extends RecyclerView.Adapter<MediaItemAdapter.ViewHolder> {
 
-    private List<SearchResponse> mediaItems = new ArrayList<>();
+    private List<MediaItemViewModel> mediaItems = new ArrayList<>();
     private Context context;
     private OnItemClickListener listener;
 
@@ -61,7 +61,7 @@ public class MediaItemAdapter extends RecyclerView.Adapter<MediaItemAdapter.View
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        SearchResponse item = getItem(position);
+        MediaItemViewModel item = getItem(position);
         Glide.with(context)
                 .load(item.getImageUrl())
                 .centerCrop()
@@ -71,7 +71,7 @@ public class MediaItemAdapter extends RecyclerView.Adapter<MediaItemAdapter.View
         holder.progressView.setVisibility(item.isDownloading() ? View.VISIBLE : View.INVISIBLE);
     }
 
-    public SearchResponse getItem(int position) {
+    public MediaItemViewModel getItem(int position) {
         return mediaItems.get(position);
     }
 
@@ -80,7 +80,7 @@ public class MediaItemAdapter extends RecyclerView.Adapter<MediaItemAdapter.View
         return mediaItems.size();
     }
 
-    public void update(List<SearchResponse> mediaItems) {
+    public void update(List<MediaItemViewModel> mediaItems) {
         this.mediaItems = mediaItems;
     }
 

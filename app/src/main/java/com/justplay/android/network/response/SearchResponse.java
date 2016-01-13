@@ -1,17 +1,15 @@
 package com.justplay.android.network.response;
 
 import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 
 public class SearchResponse {
 
-    @SerializedName("id")
     @Expose
     private String id;
-    @SerializedName("title")
+
     @Expose
     private String title;
-    @SerializedName("imageUrl")
+
     @Expose
     private String imageUrl;
 
@@ -27,23 +25,4 @@ public class SearchResponse {
         return imageUrl;
     }
 
-    private boolean isDownloading;
-
-    public boolean isDownloading() {
-        return isDownloading;
-    }
-
-    public void setIsDownloading(boolean isDownloading) {
-        this.isDownloading = isDownloading;
-    }
-
-    private String errorMessage;
-
-    public String getErrorMessage() {
-        return errorMessage;
-    }
-
-    public void setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
-    }
 }

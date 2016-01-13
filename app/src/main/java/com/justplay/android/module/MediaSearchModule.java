@@ -1,5 +1,6 @@
 package com.justplay.android.module;
 
+import com.justplay.android.model.ModelConverter;
 import com.justplay.android.scope.MediaScope;
 import com.justplay.android.network.JustPlayApi;
 import com.justplay.android.presenter.MediaSearchPresenter;
@@ -23,8 +24,8 @@ public class MediaSearchModule {
     }
 
     @Provides @MediaScope
-    MediaSearchPresenter provideMediaSearchPresenter(MediaSearchView view, JustPlayApi api) {
-        return new MediaSearchPresenter(view, api);
+    MediaSearchPresenter provideMediaSearchPresenter(MediaSearchView view, JustPlayApi api, ModelConverter modelConverter) {
+        return new MediaSearchPresenter(view, api, modelConverter);
     }
 
 }
