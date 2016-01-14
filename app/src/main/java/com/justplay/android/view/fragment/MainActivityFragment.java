@@ -10,15 +10,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.jakewharton.rxbinding.support.v7.widget.SearchViewQueryTextEvent;
 import com.justplay.android.JustPlayApplication;
-import com.justplay.android.component.DaggerMediaDownloadComponent;
-import com.justplay.android.component.MediaDownloadComponent;
+import com.justplay.android.component.DaggerMediaGridComponent;
+import com.justplay.android.component.MediaGridComponent;
 import com.justplay.android.model.MediaItemViewModel;
-import com.justplay.android.module.MediaDownloadModule;
+import com.justplay.android.module.MediaGridModule;
 import com.justplay.android.view.adapter.MediaItemAdapter;
 import com.justplay.android.R;
 import com.justplay.android.view.adapter.OnItemClickListener;
-import com.justplay.android.presenter.MediaDownloadPresenter;
+import com.justplay.android.presenter.MediaGridPresenter;
 import com.justplay.android.view.MediaGridView;
 import com.trello.rxlifecycle.FragmentEvent;
 import com.trello.rxlifecycle.components.support.RxFragment;
@@ -34,8 +35,11 @@ public class MainActivityFragment extends RxFragment implements OnItemClickListe
     @Bind(R.id.media_grid)
     RecyclerView mediaGrid;
 
+    @Bind(R.id.media_progress)
+    View progressBar;
+
     private MediaItemAdapter adapter;
-    private MediaDownloadPresenter presenter;
+    private MediaGridPresenter presenter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -44,13 +48,13 @@ public class MainActivityFragment extends RxFragment implements OnItemClickListe
     }
 
     private void injectDependencies() {
-        MediaDownloadComponent mediaComponent = DaggerMediaDownloadComponent.builder()
+        MediaGridComponent mediaComponent = DaggerMediaGridComponent.builder()
                 .applicationComponent(JustPlayApplication.component())
-                .mediaDownloadModule(new MediaDownloadModule(this))
+                .mediaGridModule(new MediaGridModule(this))
                 .build();
-        adapter = mediaComponent.adapter();
+        adapter = mediaComponent.mediaAdapter();
         adapter.setOnItemClickListener(this);
-        presenter = mediaComponent.downloadPresenter();
+        presenter = mediaComponent.gridPresenter();
     }
 
     @Override
@@ -105,4 +109,17 @@ public class MainActivityFragment extends RxFragment implements OnItemClickListe
         ButterKnife.unbind(this);
     }
 
+    public void searchMediaOnSubmit(Observable<SearchViewQueryTextEvent> queryTextEvents) {
+        presenter.searchMediaOnSubmit(queryTextEvents);
+    }
+
+    @Override
+    public void showProgressBar() {
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideProgressBar() {
+        progressBar.setVisibility(View.GONE);
+    }
 }
