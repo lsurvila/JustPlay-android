@@ -1,7 +1,9 @@
 package com.justplay.android.view.fragment;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,11 +13,12 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.jakewharton.rxbinding.support.v7.widget.SearchViewQueryTextEvent;
+import com.justplay.android.ApplicationComponent;
 import com.justplay.android.JustPlayApplication;
 import com.justplay.android.component.DaggerMediaGridComponent;
 import com.justplay.android.component.MediaGridComponent;
 import com.justplay.android.model.MediaItemViewModel;
-import com.justplay.android.module.MediaGridModule;
+import com.justplay.android.presenter.PresenterCache;
 import com.justplay.android.view.adapter.MediaItemAdapter;
 import com.justplay.android.R;
 import com.justplay.android.view.adapter.OnItemClickListener;
@@ -40,6 +43,18 @@ public class MainActivityFragment extends RxFragment implements OnItemClickListe
 
     private MediaItemAdapter adapter;
     private MediaGridPresenter presenter;
+    private Callback callback;
+    private PresenterCache presenterCache;
+
+    private boolean stateSaved;
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        if (activity instanceof Callback) {
+            callback = (Callback) activity;
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -48,13 +63,18 @@ public class MainActivityFragment extends RxFragment implements OnItemClickListe
     }
 
     private void injectDependencies() {
+        ApplicationComponent appComponent = JustPlayApplication.component();
         MediaGridComponent mediaComponent = DaggerMediaGridComponent.builder()
-                .applicationComponent(JustPlayApplication.component())
-                .mediaGridModule(new MediaGridModule(this))
+                .applicationComponent(appComponent)
                 .build();
+        presenterCache = appComponent.presenterCache();
+        presenter = presenterCache.getPresenter();
+        if (presenter == null) {
+            presenter = mediaComponent.gridPresenter();
+        }
         adapter = mediaComponent.mediaAdapter();
         adapter.setOnItemClickListener(this);
-        presenter = mediaComponent.gridPresenter();
+        presenter.bindView(this);
     }
 
     @Override
@@ -70,7 +90,7 @@ public class MainActivityFragment extends RxFragment implements OnItemClickListe
 
     @Override
     public void onItemClicked(int position) {
-        presenter.requestDownload(position, adapter.getItem(position));
+        presenter.requestDownload(position);
     }
 
     @Override
@@ -115,11 +135,47 @@ public class MainActivityFragment extends RxFragment implements OnItemClickListe
 
     @Override
     public void showProgressBar() {
+        callback.onMediaSearchRequested();
         progressBar.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void hideProgressBar() {
         progressBar.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void showGrid() {
+        mediaGrid.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideGrid() {
+        mediaGrid.setVisibility(View.GONE);
+    }
+
+    public interface Callback {
+        void onMediaSearchRequested();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        presenterCache.setPresenter(presenter);
+        stateSaved = true;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        presenter.restoreViewState();
+    }
+
+    @Override
+    public void onDestroy() {
+        if (!stateSaved) {
+            presenterCache.setPresenter(null);
+        }
+        super.onDestroy();
     }
 }

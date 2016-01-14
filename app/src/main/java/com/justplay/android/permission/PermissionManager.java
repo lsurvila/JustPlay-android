@@ -16,7 +16,7 @@ public class PermissionManager {
     private Fragment fragment;
     private AppCompatActivity activity;
 
-    public PermissionManager(Object fragmentOrActivity) {
+    public void bindFragmentOrActivity(Object fragmentOrActivity) {
         if (fragmentOrActivity instanceof Fragment) {
             fragment = (Fragment) fragmentOrActivity;
         } else if (fragmentOrActivity instanceof AppCompatActivity) {

@@ -13,7 +13,7 @@ import com.justplay.android.R;
 import com.justplay.android.model.SearchViewModel;
 import com.justplay.android.view.fragment.MainActivityFragment;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MainActivityFragment.Callback {
 
     private final String KEY_SEARCH_VIEW_STATE = "key_search_view_state";
 
@@ -56,6 +56,13 @@ public class MainActivity extends AppCompatActivity {
         searchView.setQuery(searchViewModel.getQueryString(), false);
         searchView.setIconified(!searchViewModel.isExpanded());
         if (!searchViewModel.isFocused()) {
+            searchView.clearFocus();
+        }
+    }
+
+    @Override
+    public void onMediaSearchRequested() {
+        if (searchView != null) {
             searchView.clearFocus();
         }
     }

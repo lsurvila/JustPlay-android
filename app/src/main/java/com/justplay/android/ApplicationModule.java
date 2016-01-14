@@ -2,6 +2,7 @@ package com.justplay.android;
 
 import com.justplay.android.model.ModelConverter;
 import com.justplay.android.network.JustPlayApi;
+import com.justplay.android.presenter.PresenterCache;
 
 import javax.inject.Singleton;
 
@@ -30,6 +31,11 @@ class ApplicationModule {
     @Provides @Singleton
     ModelConverter provideModelConverter() {
         return new ModelConverter();
+    }
+
+    @Provides @Singleton
+    PresenterCache presenterCache() {
+        return new PresenterCache();
     }
 
 }

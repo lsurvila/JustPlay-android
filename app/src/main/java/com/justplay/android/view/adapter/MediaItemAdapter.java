@@ -71,13 +71,13 @@ public class MediaItemAdapter extends RecyclerView.Adapter<MediaItemAdapter.View
         holder.progressView.setVisibility(item.isDownloading() ? View.VISIBLE : View.INVISIBLE);
     }
 
-    public MediaItemViewModel getItem(int position) {
+    private MediaItemViewModel getItem(int position) {
         return mediaItems.get(position);
     }
 
     @Override
     public int getItemCount() {
-        return mediaItems.size();
+        return mediaItems != null ? mediaItems.size() : 0;
     }
 
     public void update(List<MediaItemViewModel> mediaItems) {

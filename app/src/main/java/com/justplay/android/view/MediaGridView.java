@@ -7,6 +7,8 @@ import java.util.List;
 
 public interface MediaGridView extends RxLifecycleView<FragmentEvent> {
     void updateGrid(List<MediaItemViewModel> items);
+    void showGrid();
+    void hideGrid();
     void showProgressBar();
     void hideProgressBar();
     void invalidateItemState(int position);
