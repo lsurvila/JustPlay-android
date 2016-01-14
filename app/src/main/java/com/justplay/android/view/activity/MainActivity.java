@@ -10,11 +10,16 @@ import android.view.MenuItem;
 
 import com.jakewharton.rxbinding.support.v7.widget.RxSearchView;
 import com.justplay.android.R;
+import com.justplay.android.model.SearchViewModel;
 import com.justplay.android.view.fragment.MainActivityFragment;
 
 public class MainActivity extends AppCompatActivity {
 
+    private final String KEY_SEARCH_VIEW_STATE = "key_search_view_state";
+
     private MainActivityFragment fragment;
+    private SearchViewModel searchViewModel;
+    private SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,14 +39,41 @@ public class MainActivity extends AppCompatActivity {
         menuInflater.inflate(R.menu.menu, menu);
         final MenuItem searchItem = menu.findItem(R.id.action_search);
         if (searchItem != null) {
-            SearchView searchView = (SearchView) searchItem.getActionView();
+            searchView = (SearchView) searchItem.getActionView();
             if (searchView != null) {
+                if (searchViewModel != null) {
+                    restoreSearchViewState();
+                }
                 if (fragment != null) {
                     fragment.searchMediaOnSubmit(RxSearchView.queryTextChangeEvents(searchView));
                 }
             }
         }
         return super.onCreateOptionsMenu(menu);
+    }
+
+    private void restoreSearchViewState() {
+        searchView.setQuery(searchViewModel.getQueryString(), false);
+        searchView.setIconified(!searchViewModel.isExpanded());
+        if (!searchViewModel.isFocused()) {
+            searchView.clearFocus();
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        searchViewModel = new SearchViewModel();
+        searchViewModel.setQueryString(searchView.getQuery().toString());
+        searchViewModel.setExpanded(!searchView.isIconified());
+        searchViewModel.setFocused(searchView.hasFocus());
+        outState.putParcelable(KEY_SEARCH_VIEW_STATE, searchViewModel);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        searchViewModel = savedInstanceState.getParcelable(KEY_SEARCH_VIEW_STATE);
     }
 
 }
