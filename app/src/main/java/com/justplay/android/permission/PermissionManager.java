@@ -9,10 +9,9 @@ import android.support.v7.app.AppCompatActivity;
 
 public class PermissionManager {
 
-    private static final int PERMISSION_REQUEST = 1;
     private static final String PERMISSION = android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
-    private Callback callback;
+    private PermissionCallback callback;
     private Fragment fragment;
     private AppCompatActivity activity;
 
@@ -24,47 +23,44 @@ public class PermissionManager {
         }
     }
 
-    public void setCallback(Callback callback) {
+    public void setCallback(PermissionCallback callback) {
         this.callback = callback;
     }
 
     /**
      * pass result from onRequestPermissionsResult to handleResponse.
      */
-    public void requestPermissionIfNeeded() {
+    public void requestPermissionIfNeeded(int requestCode) {
         int permissionCheck = ContextCompat.checkSelfPermission(fragment.getActivity(), PERMISSION);
         if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
-            callback.onPermissionGranted();
+            callback.onPermissionGranted(requestCode);
         } else {
             if (ActivityCompat.shouldShowRequestPermissionRationale(fragment.getActivity(), PERMISSION)) {
                 callback.onPermissionDenied();
             } else {
-                requestPermission();
+                requestPermission(requestCode);
             }
         }
     }
 
-    private void requestPermission() {
+    private void requestPermission(int requestCode) {
         if (fragment != null) {
-            fragment.requestPermissions(new String[]{PERMISSION}, PERMISSION_REQUEST);
+            fragment.requestPermissions(new String[]{PERMISSION}, requestCode);
         } else if (activity != null) {
-            ActivityCompat.requestPermissions(activity, new String[]{PERMISSION}, PERMISSION_REQUEST);
+            ActivityCompat.requestPermissions(activity, new String[]{PERMISSION}, requestCode);
         }
     }
 
     public void handleResponse(int requestCode, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case PERMISSION_REQUEST:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    callback.onPermissionGranted();
-                } else {
-                    callback.onPermissionDenied();
-                }
+        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            callback.onPermissionGranted(requestCode);
+        } else {
+            callback.onPermissionDenied();
         }
     }
 
-    public interface Callback {
-        void onPermissionGranted();
+    public interface PermissionCallback {
+        void onPermissionGranted(int requestCode);
         void onPermissionDenied();
     }
 

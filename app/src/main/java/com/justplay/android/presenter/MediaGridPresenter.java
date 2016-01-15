@@ -1,7 +1,5 @@
 package com.justplay.android.presenter;
 
-import android.util.Log;
-
 import com.jakewharton.rxbinding.support.v7.widget.SearchViewQueryTextEvent;
 import com.justplay.android.model.MediaGridViewModel;
 import com.justplay.android.model.MediaItemViewModel;
@@ -16,7 +14,7 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public class MediaGridPresenter implements PermissionManager.Callback {
+public class MediaGridPresenter implements PermissionManager.PermissionCallback {
 
     private MediaGridView view;
     private final JustPlayApi api;
@@ -38,29 +36,34 @@ public class MediaGridPresenter implements PermissionManager.Callback {
         this.permissionManager.bindFragmentOrActivity(view);
     }
 
-    private void downloadMediaItem(MediaItemViewModel item) {
+    public void unbindView() {
+        view = null;
+    }
+
+    private void downloadMediaItem(int position, MediaItemViewModel item) {
         item.setIsDownloading(true);
-        view.invalidateItemState(model.getRequestItemPosition());
+        view.invalidateItemState(position);
         api.download(item.getId())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(file -> {
                     item.setIsDownloading(false);
-                    view.invalidateItemState(model.getRequestItemPosition());
-                    view.showSnackbar("Downloaded to " + file.getAbsolutePath());
-                    Log.d("DaggerDebug", "downloaded");
+                    if (view != null) {
+                        view.invalidateItemState(position);
+                        view.showSnackbar("Downloaded to " + file.getAbsolutePath());
+                    }
                 }, error -> {
                     item.setIsDownloading(false);
-                    view.invalidateItemState(model.getRequestItemPosition());
-                    view.showToast(error.getLocalizedMessage());
-                    Log.d("DaggerDebug", "failed");
+                    if (view != null) {
+                        view.invalidateItemState(position);
+                        view.showToast(error.getLocalizedMessage());
+                    }
                 });
     }
 
 
     public void requestDownload(int position) {
-        model.setRequestItemPosition(position);
-        permissionManager.requestPermissionIfNeeded();
+        permissionManager.requestPermissionIfNeeded(position);
     }
 
 
@@ -69,8 +72,8 @@ public class MediaGridPresenter implements PermissionManager.Callback {
     }
 
     @Override
-    public void onPermissionGranted() {
-        downloadMediaItem(model.getRequestedItem());
+    public void onPermissionGranted(int requestCode) {
+        downloadMediaItem(requestCode, model.getGrid().get(requestCode));
     }
 
     @Override

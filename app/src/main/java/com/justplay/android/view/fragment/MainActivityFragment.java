@@ -161,6 +161,7 @@ public class MainActivityFragment extends RxFragment implements OnItemClickListe
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        presenter.unbindView();
         presenterCache.setPresenter(presenter);
         stateSaved = true;
     }

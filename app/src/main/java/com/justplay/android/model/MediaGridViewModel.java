@@ -7,7 +7,6 @@ public class MediaGridViewModel {
     private List<MediaItemViewModel> grid;
     private String errorMessage;
     private boolean isSearching;
-    private int requestItemPosition;
 
     public void setGrid(List<MediaItemViewModel> grid) {
         this.grid = grid;
@@ -19,10 +18,6 @@ public class MediaGridViewModel {
 
     public void setSearching(boolean searching) {
         isSearching = searching;
-    }
-
-    public void setRequestItemPosition(int requestItemPosition) {
-        this.requestItemPosition = requestItemPosition;
     }
 
     public boolean isSuccessful() {
@@ -39,14 +34,6 @@ public class MediaGridViewModel {
 
     public boolean isSearching() {
         return isSearching;
-    }
-
-    public int getRequestItemPosition() {
-        return requestItemPosition;
-    }
-
-    public MediaItemViewModel getRequestedItem() {
-        return grid.get(requestItemPosition);
     }
 
 }
