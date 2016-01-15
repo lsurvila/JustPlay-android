@@ -176,6 +176,12 @@ public class MainActivityFragment extends Fragment implements OnItemClickListene
     }
 
     @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        presenter.unsubscribe();
+    }
+
+    @Override
     public void onDestroy() {
         onDestroyCalled = true;
         if (onSaveInstanceCalled) {
@@ -200,7 +206,7 @@ public class MainActivityFragment extends Fragment implements OnItemClickListene
     // OnDestroy
     // - After Rotation
     // OnActivityCreated
-    // 2) PRESENTER SHOULD BE SAVED, UNBIND VIEW (view is destroyed by SYSTEM) AND BIND VIEW ONCREATE
+    // 2) PRESENTER SHOULD BE SAVED, UNBIND VIEW (view is destroyed by SYSTEM) AND BIND VIEW ON CREATE
 
     // - Back Pressed (Destroy)
     // OnDestroy
@@ -215,14 +221,14 @@ public class MainActivityFragment extends Fragment implements OnItemClickListene
     // OnDestroy
     // - Maximise
     // OnActivityCreated
-    // 2) PRESENTER SHOULD BE SAVED, UNBIND VIEW (view is destroyed by SYSTEM) AND BIND VIEW ONCREATE
+    // 2) PRESENTER SHOULD BE SAVED, UNBIND VIEW (view is destroyed by SYSTEM) AND BIND VIEW ON CREATE
 
     // - Rotate
     // OnSaveInstanceState
     // OnDestroy
     // - After Rotation
     // OnActivityCreated
-    // 2) PRESENTER SHOULD BE SAVED, UNBIND VIEW (view is destroyed by SYSTEM) AND BIND VIEW ONCREATE
+    // 2) PRESENTER SHOULD BE SAVED, UNBIND VIEW (view is destroyed by SYSTEM) AND BIND VIEW ON CREATE
 
     // - Back Pressed (Destroy)
     // OnDestroy

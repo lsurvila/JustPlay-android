@@ -15,6 +15,7 @@ public class PresenterCache {
         // and unsubscribe all ongoing operations if any.
         if (this.presenter != null) {
             this.presenter.unsubscribe();
+            this.presenter.unbindView();
         }
         this.presenter = null;
     }
