@@ -8,9 +8,13 @@ import com.justplay.android.network.JustPlayApi;
 import com.justplay.android.permission.PermissionManager;
 import com.justplay.android.view.MediaGridView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.inject.Inject;
 
 import rx.Observable;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -21,6 +25,8 @@ public class MediaGridPresenter implements PermissionManager.PermissionCallback 
     private final PermissionManager permissionManager;
     private final ModelConverter modelConverter;
     private final MediaGridViewModel model;
+
+    private List<Subscription> subscriptionList = new ArrayList<>();
 
     @Inject
     public MediaGridPresenter(MediaGridViewModel model, JustPlayApi api, PermissionManager permissionManager, ModelConverter modelConverter) {
@@ -43,7 +49,7 @@ public class MediaGridPresenter implements PermissionManager.PermissionCallback 
     private void downloadMediaItem(int position, MediaItemViewModel item) {
         item.setIsDownloading(true);
         view.invalidateItemState(position);
-        api.download(item.getId())
+        subscriptionList.add(api.download(item.getId())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(file -> {
@@ -58,7 +64,7 @@ public class MediaGridPresenter implements PermissionManager.PermissionCallback 
                         view.invalidateItemState(position);
                         view.showToast(error.getLocalizedMessage());
                     }
-                });
+                }));
     }
 
 
@@ -82,7 +88,7 @@ public class MediaGridPresenter implements PermissionManager.PermissionCallback 
     }
 
     public void searchMediaOnSubmit(Observable<SearchViewQueryTextEvent> queryTextEvents) {
-        queryTextEvents
+        subscriptionList.add(queryTextEvents
                 .flatMap(this::performSearchOnSubmit)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(model -> {
@@ -94,7 +100,7 @@ public class MediaGridPresenter implements PermissionManager.PermissionCallback 
                     } else {
                         view.showToast(model.getErrorMessage());
                     }
-                });
+                }));
     }
 
     private Observable<MediaGridViewModel> performSearchOnSubmit(SearchViewQueryTextEvent event) {
@@ -118,6 +124,14 @@ public class MediaGridPresenter implements PermissionManager.PermissionCallback 
             view.hideProgressBar();
             view.showGrid();
             view.updateGrid(model.getGrid());
+        }
+    }
+
+    public void unsubscribe() {
+        unbindView();
+        int size = subscriptionList.size();
+        for (int i = 0; i < size; i++) {
+            subscriptionList.get(i).unsubscribe();
         }
     }
 
