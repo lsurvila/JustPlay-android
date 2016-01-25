@@ -71,10 +71,12 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         searchViewModel = new SearchViewModel();
-        searchViewModel.setQueryString(searchView.getQuery().toString());
-        searchViewModel.setExpanded(!searchView.isIconified());
-        searchViewModel.setFocused(searchView.hasFocus());
-        outState.putParcelable(KEY_SEARCH_VIEW_STATE, searchViewModel);
+        if (searchView != null) {
+            searchViewModel.setQueryString(searchView.getQuery().toString());
+            searchViewModel.setExpanded(!searchView.isIconified());
+            searchViewModel.setFocused(searchView.hasFocus());
+            outState.putParcelable(KEY_SEARCH_VIEW_STATE, searchViewModel);
+        }
     }
 
     @Override

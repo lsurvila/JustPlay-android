@@ -89,6 +89,26 @@ public class MainActivityFragment extends Fragment implements OnItemClickListene
     }
 
     @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        // we restore view state (either new or restored presenter, we bind existing data to view from preserved model inside presenter)
+        presenter.restoreViewState();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (!onDestroyCalled) {
+            // if destroy was not called (activity just minimised, but onSaveInstanceState still called), we don't need to restore and therefore ignore onSaveInstanceState
+            onSaveInstanceCalled = false;
+        }
+    }
+
+    public void searchMediaOnSubmit(Observable<SearchViewQueryTextEvent> queryTextEvents) {
+        presenter.searchMediaOnSubmit(queryTextEvents);
+    }
+
+    @Override
     public void onItemClicked(int position) {
         presenter.requestDownload(position);
     }
@@ -119,16 +139,6 @@ public class MainActivityFragment extends Fragment implements OnItemClickListene
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        ButterKnife.unbind(this);
-    }
-
-    public void searchMediaOnSubmit(Observable<SearchViewQueryTextEvent> queryTextEvents) {
-        presenter.searchMediaOnSubmit(queryTextEvents);
-    }
-
-    @Override
     public void showProgressBar() {
         callback.onMediaSearchRequested();
         progressBar.setVisibility(View.VISIBLE);
@@ -149,24 +159,10 @@ public class MainActivityFragment extends Fragment implements OnItemClickListene
         mediaGrid.setVisibility(View.GONE);
     }
 
-    public interface Callback {
-        void onMediaSearchRequested();
-    }
-
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        // we restore view state (either new or restored presenter, we bind existing data to view from preserved model inside presenter)
-        presenter.restoreViewState();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (!onDestroyCalled) {
-            // if destroy was not called (activity just minimised, but onSaveInstanceState still called), we don't need to restore and therefore ignore onSaveInstanceState
-            onSaveInstanceCalled = false;
-        }
+    public void onLowMemory() {
+        super.onLowMemory();
+        presenter.unsubscribe();
     }
 
     @Override
@@ -176,9 +172,9 @@ public class MainActivityFragment extends Fragment implements OnItemClickListene
     }
 
     @Override
-    public void onLowMemory() {
-        super.onLowMemory();
-        presenter.unsubscribe();
+    public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.unbind(this);
     }
 
     @Override
@@ -235,5 +231,9 @@ public class MainActivityFragment extends Fragment implements OnItemClickListene
     // - Start Again
     // OnActivityCreated
     // 3) DESTROY PRESENTER, UNBIND VIEW, STOP SUBSCRIPTIONS (view is destroyed by USER)
+
+    public interface Callback {
+        void onMediaSearchRequested();
+    }
 
 }

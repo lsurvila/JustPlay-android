@@ -1,74 +1,59 @@
 package com.justplay.android.view.adapter;
 
-import android.content.Context;
+import android.databinding.BindingAdapter;
+import android.databinding.DataBindingUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.justplay.android.R;
+import com.justplay.android.databinding.ItemMediaBinding;
 import com.justplay.android.model.MediaItemViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-
 public class MediaItemAdapter extends RecyclerView.Adapter<MediaItemAdapter.ViewHolder> {
 
     private List<MediaItemViewModel> mediaItems = new ArrayList<>();
-    private Context context;
     private OnItemClickListener listener;
+    private ItemMediaBinding binding;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        @Bind(R.id.media_item)
-        View mediaItemView;
-        @Bind(R.id.media_image)
-        ImageView mediaImageView;
-        @Bind(R.id.media_title)
-        TextView mediaTitleView;
-        @Bind(R.id.media_downloading)
-        View progressView;
-
-        private final OnItemClickListener listener;
-
-        public ViewHolder(View view, OnItemClickListener listener) {
+        public ViewHolder(View view) {
             super(view);
-            this.listener = listener;
-            ButterKnife.bind(this, view);
         }
 
-        @OnClick(R.id.media_item)
-        void onItemClicked() {
-            if (listener != null) {
-                listener.onItemClicked(getLayoutPosition());
-            }
+        @BindingAdapter("bind:imageUrl")
+        public static void setMediaImageView(ImageView imageView, String imageUrl) {
+            Glide.with(imageView.getContext())
+                    .load(imageUrl)
+                    .centerCrop()
+                    .crossFade()
+                    .into(imageView);
         }
 
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        context = parent.getContext();
-        return new ViewHolder(LayoutInflater.from(context).inflate(R.layout.item_media, parent, false), listener);
+        binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.item_media, parent, false);
+        return new ViewHolder(binding.getRoot());
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         MediaItemViewModel item = getItem(position);
-        Glide.with(context)
-                .load(item.getImageUrl())
-                .centerCrop()
-                .crossFade()
-                .into(holder.mediaImageView);
-        holder.mediaTitleView.setText(item.getTitle());
-        holder.progressView.setVisibility(item.isDownloading() ? View.VISIBLE : View.INVISIBLE);
+        binding.setModel(item);
+        binding.setListener(v -> {
+            if (listener != null) {
+                listener.onItemClicked(position);
+            }
+        });
     }
 
     private MediaItemViewModel getItem(int position) {
@@ -87,4 +72,5 @@ public class MediaItemAdapter extends RecyclerView.Adapter<MediaItemAdapter.View
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.listener = listener;
     }
+
 }

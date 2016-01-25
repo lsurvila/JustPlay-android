@@ -39,6 +39,7 @@ gen-external-apklibs/
 # Android Studio
 .idea
 .gradle
+gradle-wrapper.properties
 bin/
 gen/
 out/

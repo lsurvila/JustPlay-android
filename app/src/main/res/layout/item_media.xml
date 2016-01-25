@@ -1,36 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.justplay.android.view.widget.SquareFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/media_item"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools">
-
-    <ImageView
-        android:id="@+id/media_image"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <import type="android.view.View" />
+        <variable
+            name="model"
+            type="com.justplay.android.model.MediaItemViewModel" />
+        <variable
+            name="listener"
+            type="android.view.View.OnClickListener" />
+    </data>
+    <com.justplay.android.view.widget.SquareFrameLayout
+        android:id="@+id/media_item"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:ignore="ContentDescription" />
+        app:onClickListener="@{listener}"
+        xmlns:tools="http://schemas.android.com/tools">
 
-    <View
-        android:id="@+id/media_image_darken"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#22000000" />
+        <ImageView
+            android:id="@+id/media_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:imageUrl="@{model.imageUrl}"
+            tools:ignore="ContentDescription" />
 
-    <TextView
-        android:id="@+id/media_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:gravity="center"
-        android:textColor="@android:color/primary_text_dark"
-        tools:text="Test"/>
+        <View
+            android:id="@+id/media_image_darken"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#22000000" />
 
-    <ProgressBar
-        android:id="@+id/media_downloading"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="48dp"
-        android:visibility="invisible"/>
+        <TextView
+            android:id="@+id/media_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:gravity="center"
+            android:textColor="@android:color/primary_text_dark"
+            android:text="@{model.title}"
+            tools:text="Test"/>
 
-</com.justplay.android.view.widget.SquareFrameLayout>
+        <ProgressBar
+            android:id="@+id/media_downloading"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="48dp"
+            android:visibility="@{model.downloading ? View.VISIBLE : View.GONE}"/>
+
+    </com.justplay.android.view.widget.SquareFrameLayout>
+</layout>
