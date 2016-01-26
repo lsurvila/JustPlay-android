@@ -20,12 +20,18 @@ public class MediaItemAdapter extends RecyclerView.Adapter<MediaItemAdapter.View
 
     private List<MediaItemViewModel> mediaItems = new ArrayList<>();
     private OnItemClickListener listener;
-    private ItemMediaBinding binding;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
+        private final ItemMediaBinding binding;
+
         public ViewHolder(View view) {
             super(view);
+            binding = DataBindingUtil.bind(view);
+        }
+
+        public ItemMediaBinding getBinding() {
+            return binding;
         }
 
         @BindingAdapter("bind:imageUrl")
@@ -41,23 +47,15 @@ public class MediaItemAdapter extends RecyclerView.Adapter<MediaItemAdapter.View
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.item_media, parent, false);
-        return new ViewHolder(binding.getRoot());
+        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_media, parent, false));
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        MediaItemViewModel item = getItem(position);
-        binding.setModel(item);
-        binding.setListener(v -> {
-            if (listener != null) {
-                listener.onItemClicked(position);
-            }
-        });
-    }
-
-    private MediaItemViewModel getItem(int position) {
-        return mediaItems.get(position);
+        ItemMediaBinding binding = holder.getBinding();
+        binding.setModel(mediaItems.get(position));
+        binding.setListener(v -> listener.onItemClicked(position));
+        binding.executePendingBindings();
     }
 
     @Override
