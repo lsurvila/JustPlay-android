@@ -28,6 +28,8 @@ import com.justplay.android.view.MediaGridView;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import rx.Observable;
@@ -40,10 +42,12 @@ public class MainActivityFragment extends Fragment implements OnItemClickListene
     @Bind(R.id.media_progress)
     View progressBar;
 
-    private MediaItemAdapter adapter;
+    @Inject PresenterCache presenterCache;
+    @Inject MediaItemAdapter adapter;
+
     private MediaGridPresenter presenter;
+
     private Callback callback;
-    private PresenterCache presenterCache;
 
     private boolean onSaveInstanceCalled;
     private boolean onDestroyCalled;
@@ -67,13 +71,9 @@ public class MainActivityFragment extends Fragment implements OnItemClickListene
         MediaGridComponent mediaComponent = DaggerMediaGridComponent.builder()
                 .applicationComponent(appComponent)
                 .build();
-        presenterCache = appComponent.presenterCache();
-        presenter = presenterCache.getPresenter();
-        if (presenter == null) {
-            presenter = mediaComponent.gridPresenter();
-        }
-        adapter = mediaComponent.mediaAdapter();
+        mediaComponent.inject(this);
         adapter.setOnItemClickListener(this);
+        presenter = presenterCache.getPresenter();
         presenter.bindView(this);
     }
 

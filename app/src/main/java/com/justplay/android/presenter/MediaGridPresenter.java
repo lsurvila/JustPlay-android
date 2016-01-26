@@ -19,6 +19,7 @@ public class MediaGridPresenter implements PermissionManager.PermissionCallback 
 
     private static final int MAX_DOWNLOADS = 5;
     private MediaGridView view;
+
     private final JustPlayApi api;
     private final PermissionManager permissionManager;
     private final ModelConverter modelConverter;
