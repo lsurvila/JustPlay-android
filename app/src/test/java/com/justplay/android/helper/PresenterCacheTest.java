@@ -4,10 +4,13 @@ import com.justplay.android.mediagrid.presenter.MediaGridPresenter;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@RunWith(MockitoJUnitRunner.class)
 public class PresenterCacheTest {
 
     @Mock
@@ -24,6 +27,7 @@ public class PresenterCacheTest {
     public void shouldSavePresenter() {
         presenterCache.savePresenter(presenter);
 
+        assertThat(presenterCache.getPresenter()).isNotNull();
         assertThat(presenterCache.getPresenter()).isEqualTo(presenter);
     }
 
