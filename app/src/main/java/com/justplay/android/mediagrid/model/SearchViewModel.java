@@ -1,4 +1,4 @@
-package com.justplay.android.model;
+package com.justplay.android.mediagrid.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;

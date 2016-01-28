@@ -1,5 +1,7 @@
-package com.justplay.android.model;
+package com.justplay.android.helper;
 
+import com.justplay.android.mediagrid.model.MediaGridViewModel;
+import com.justplay.android.mediagrid.model.MediaItemViewModel;
 import com.justplay.android.network.response.SearchResponse;
 
 import java.util.ArrayList;

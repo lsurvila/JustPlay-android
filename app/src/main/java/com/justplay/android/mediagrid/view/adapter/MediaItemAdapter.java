@@ -1,4 +1,4 @@
-package com.justplay.android.view.adapter;
+package com.justplay.android.mediagrid.view.adapter;
 
 import android.databinding.BindingAdapter;
 import android.databinding.DataBindingUtil;
@@ -11,7 +11,7 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.justplay.android.R;
 import com.justplay.android.databinding.ItemMediaBinding;
-import com.justplay.android.model.MediaItemViewModel;
+import com.justplay.android.mediagrid.model.MediaItemViewModel;
 
 import java.util.ArrayList;
 import java.util.List;

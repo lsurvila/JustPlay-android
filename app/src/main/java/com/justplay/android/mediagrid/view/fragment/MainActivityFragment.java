@@ -1,4 +1,4 @@
-package com.justplay.android.view.fragment;
+package com.justplay.android.mediagrid.view.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -14,17 +14,17 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.jakewharton.rxbinding.support.v7.widget.SearchViewQueryTextEvent;
-import com.justplay.android.ApplicationComponent;
 import com.justplay.android.JustPlayApplication;
-import com.justplay.android.component.DaggerMediaGridComponent;
-import com.justplay.android.component.MediaGridComponent;
-import com.justplay.android.model.MediaItemViewModel;
-import com.justplay.android.presenter.PresenterCache;
-import com.justplay.android.view.adapter.MediaItemAdapter;
+import com.justplay.android.mediagrid.dagger.DaggerMediaGridComponent;
+import com.justplay.android.mediagrid.dagger.MediaGridComponent;
+import com.justplay.android.mediagrid.model.MediaItemViewModel;
+import com.justplay.android.helper.PermissionManager;
+import com.justplay.android.helper.PresenterCache;
+import com.justplay.android.mediagrid.view.adapter.MediaItemAdapter;
 import com.justplay.android.R;
-import com.justplay.android.view.adapter.OnItemClickListener;
-import com.justplay.android.presenter.MediaGridPresenter;
-import com.justplay.android.view.MediaGridView;
+import com.justplay.android.mediagrid.view.adapter.OnItemClickListener;
+import com.justplay.android.mediagrid.presenter.MediaGridPresenter;
+import com.justplay.android.mediagrid.view.MediaGridView;
 
 import java.util.List;
 
@@ -34,7 +34,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import rx.Observable;
 
-public class MainActivityFragment extends Fragment implements OnItemClickListener, MediaGridView {
+public class MainActivityFragment extends Fragment implements OnItemClickListener, MediaGridView, PermissionManager.PermissionCallback {
 
     @Bind(R.id.media_grid)
     RecyclerView mediaGrid;
@@ -44,7 +44,7 @@ public class MainActivityFragment extends Fragment implements OnItemClickListene
 
     @Inject PresenterCache presenterCache;
     @Inject MediaItemAdapter adapter;
-
+    @Inject PermissionManager permissionManager;
     private MediaGridPresenter presenter;
 
     private Callback callback;
@@ -67,14 +67,17 @@ public class MainActivityFragment extends Fragment implements OnItemClickListene
     }
 
     private void injectDependencies() {
-        ApplicationComponent appComponent = JustPlayApplication.component();
         MediaGridComponent mediaComponent = DaggerMediaGridComponent.builder()
-                .applicationComponent(appComponent)
+                .applicationComponent(JustPlayApplication.component())
                 .build();
         mediaComponent.inject(this);
         adapter.setOnItemClickListener(this);
         presenter = presenterCache.getPresenter();
+        if (presenter == null) {
+            presenter = mediaComponent.mediaGridPresenter();
+        }
         presenter.bindView(this);
+        permissionManager.setCallback(this);
     }
 
     @Override
@@ -110,12 +113,22 @@ public class MainActivityFragment extends Fragment implements OnItemClickListene
 
     @Override
     public void onItemClicked(int position) {
-        presenter.requestDownload(position);
+        permissionManager.requestPermissionIfNeeded(position);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        presenter.handlePermissionResponse(requestCode, grantResults);
+        permissionManager.handleResponse(requestCode, grantResults);
+    }
+
+    @Override
+    public void onPermissionGranted(int requestCode) {
+        presenter.downloadMediaItemAllowed(requestCode);
+    }
+
+    @Override
+    public void onPermissionDenied() {
+        presenter.downloadMediaItemDenied();
     }
 
     @Override

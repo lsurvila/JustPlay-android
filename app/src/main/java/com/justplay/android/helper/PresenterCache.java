@@ -1,19 +1,10 @@
-package com.justplay.android.presenter;
+package com.justplay.android.helper;
 
-import com.justplay.android.JustPlayApplication;
-import com.justplay.android.component.DaggerMediaGridComponent;
-import com.justplay.android.component.MediaGridComponent;
+import com.justplay.android.mediagrid.presenter.MediaGridPresenter;
 
 public class PresenterCache {
 
-    private final MediaGridComponent component;
     private MediaGridPresenter presenter;
-
-    public PresenterCache() {
-        component = DaggerMediaGridComponent.builder()
-                .applicationComponent(JustPlayApplication.component())
-                .build();
-    }
 
     public void savePresenter(MediaGridPresenter presenter) {
         // we need to unbind current view, as after activity/fragment restarts, new view will be provided
@@ -32,9 +23,6 @@ public class PresenterCache {
     }
 
     public MediaGridPresenter getPresenter() {
-        if (presenter == null) {
-            presenter = component.gridPresenter();
-        }
         return presenter;
     }
 

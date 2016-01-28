@@ -1,4 +1,4 @@
-package com.justplay.android.permission;
+package com.justplay.android.helper;
 
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
@@ -15,16 +15,15 @@ public class PermissionManager {
     private Fragment fragment;
     private AppCompatActivity activity;
 
-    public void bindFragmentOrActivity(Object fragmentOrActivity) {
+    public void setCallback(Object fragmentOrActivity) {
         if (fragmentOrActivity instanceof Fragment) {
             fragment = (Fragment) fragmentOrActivity;
         } else if (fragmentOrActivity instanceof AppCompatActivity) {
             activity = (AppCompatActivity) fragmentOrActivity;
         }
-    }
-
-    public void setCallback(PermissionCallback callback) {
-        this.callback = callback;
+        if (fragmentOrActivity instanceof PermissionCallback) {
+            callback = (PermissionCallback) fragmentOrActivity;
+        }
     }
 
     /**

@@ -1,4 +1,4 @@
-package com.justplay.android.view.activity;
+package com.justplay.android.mediagrid.view.activity;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -10,8 +10,8 @@ import android.view.MenuItem;
 
 import com.jakewharton.rxbinding.support.v7.widget.RxSearchView;
 import com.justplay.android.R;
-import com.justplay.android.model.SearchViewModel;
-import com.justplay.android.view.fragment.MainActivityFragment;
+import com.justplay.android.mediagrid.model.SearchViewModel;
+import com.justplay.android.mediagrid.view.fragment.MainActivityFragment;
 
 public class MainActivity extends AppCompatActivity implements MainActivityFragment.Callback {
 

@@ -1,8 +1,8 @@
-package com.justplay.android;
+package com.justplay.android.dagger;
 
-import com.justplay.android.model.ModelConverter;
+import com.justplay.android.helper.ModelConverter;
+import com.justplay.android.helper.PresenterCache;
 import com.justplay.android.network.JustPlayApi;
-import com.justplay.android.presenter.PresenterCache;
 
 import javax.inject.Singleton;
 
@@ -11,7 +11,7 @@ import dagger.Component;
 @Singleton
 @Component(modules = { ApplicationModule.class })
 public interface ApplicationComponent {
-    JustPlayApi api();
-    ModelConverter converter();
+    JustPlayApi justPlayApi();
     PresenterCache presenterCache();
+    ModelConverter modelConverter();
 }

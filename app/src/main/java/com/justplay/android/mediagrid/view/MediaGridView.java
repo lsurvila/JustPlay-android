@@ -1,6 +1,6 @@
-package com.justplay.android.view;
+package com.justplay.android.mediagrid.view;
 
-import com.justplay.android.model.MediaItemViewModel;
+import com.justplay.android.mediagrid.model.MediaItemViewModel;
 
 import java.util.List;
 

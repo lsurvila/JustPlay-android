@@ -1,4 +1,4 @@
-package com.justplay.android.scope;
+package com.justplay.android.mediagrid.dagger;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

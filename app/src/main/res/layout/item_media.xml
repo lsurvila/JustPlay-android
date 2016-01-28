@@ -5,12 +5,12 @@
         <import type="android.view.View" />
         <variable
             name="model"
-            type="com.justplay.android.model.MediaItemViewModel" />
+            type="com.justplay.android.mediagrid.model.MediaItemViewModel" />
         <variable
             name="listener"
             type="android.view.View.OnClickListener" />
     </data>
-    <com.justplay.android.view.widget.SquareFrameLayout
+    <com.justplay.android.widget.SquareFrameLayout
         android:id="@+id/media_item"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -47,5 +47,5 @@
             android:layout_margin="48dp"
             android:visibility="@{model.downloading ? View.VISIBLE : View.GONE}"/>
 
-    </com.justplay.android.view.widget.SquareFrameLayout>
+    </com.justplay.android.widget.SquareFrameLayout>
 </layout>

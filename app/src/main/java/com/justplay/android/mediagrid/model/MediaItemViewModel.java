@@ -1,4 +1,4 @@
-package com.justplay.android.model;
+package com.justplay.android.mediagrid.model;
 
 public class MediaItemViewModel {
 

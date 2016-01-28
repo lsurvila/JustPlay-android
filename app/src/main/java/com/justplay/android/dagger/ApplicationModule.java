@@ -1,8 +1,9 @@
-package com.justplay.android;
+package com.justplay.android.dagger;
 
-import com.justplay.android.model.ModelConverter;
+import com.justplay.android.JustPlayApplication;
+import com.justplay.android.helper.ModelConverter;
+import com.justplay.android.helper.PresenterCache;
 import com.justplay.android.network.JustPlayApi;
-import com.justplay.android.presenter.PresenterCache;
 
 import javax.inject.Singleton;
 
@@ -10,7 +11,7 @@ import dagger.Module;
 import dagger.Provides;
 
 @Module
-class ApplicationModule {
+public class ApplicationModule {
 
     private final JustPlayApplication application;
 
@@ -34,7 +35,7 @@ class ApplicationModule {
     }
 
     @Provides @Singleton
-    PresenterCache presenterCache() {
+    PresenterCache providePresenterCache() {
         return new PresenterCache();
     }
 

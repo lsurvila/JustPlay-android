@@ -1,12 +1,11 @@
-package com.justplay.android.presenter;
+package com.justplay.android.mediagrid.presenter;
 
 import com.jakewharton.rxbinding.support.v7.widget.SearchViewQueryTextEvent;
-import com.justplay.android.model.MediaGridViewModel;
-import com.justplay.android.model.MediaItemViewModel;
-import com.justplay.android.model.ModelConverter;
+import com.justplay.android.mediagrid.model.MediaGridViewModel;
+import com.justplay.android.mediagrid.model.MediaItemViewModel;
+import com.justplay.android.helper.ModelConverter;
 import com.justplay.android.network.JustPlayApi;
-import com.justplay.android.permission.PermissionManager;
-import com.justplay.android.view.MediaGridView;
+import com.justplay.android.mediagrid.view.MediaGridView;
 
 import javax.inject.Inject;
 
@@ -15,13 +14,12 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
-public class MediaGridPresenter implements PermissionManager.PermissionCallback {
+public class MediaGridPresenter {
 
     private static final int MAX_DOWNLOADS = 5;
     private MediaGridView view;
 
     private final JustPlayApi api;
-    private final PermissionManager permissionManager;
     private final ModelConverter modelConverter;
     private final MediaGridViewModel model;
 
@@ -30,17 +28,14 @@ public class MediaGridPresenter implements PermissionManager.PermissionCallback 
     private int requestCount;
 
     @Inject
-    public MediaGridPresenter(MediaGridViewModel model, JustPlayApi api, PermissionManager permissionManager, ModelConverter modelConverter) {
+    public MediaGridPresenter(MediaGridViewModel model, JustPlayApi api, ModelConverter modelConverter) {
         this.model = model;
         this.api = api;
-        this.permissionManager = permissionManager;
-        this.permissionManager.setCallback(this);
         this.modelConverter = modelConverter;
     }
 
     public void bindView(MediaGridView view) {
         this.view = view;
-        this.permissionManager.bindFragmentOrActivity(view);
     }
 
     public void unbindView() {
@@ -70,11 +65,12 @@ public class MediaGridPresenter implements PermissionManager.PermissionCallback 
                 }));
     }
 
-    public void requestDownload(int position) {
+    public void downloadMediaItemAllowed(int position) {
         if (model.getGrid().get(position).isDownloading()) {
             view.showToast(model.getGrid().get(position).getTitle() + " is already downloading");
         } else if (requestCount < MAX_DOWNLOADS) {
-            permissionManager.requestPermissionIfNeeded(position);
+            requestCount++;
+            downloadMediaItem(position, model.getGrid().get(position));
         } else {
             // TODO implement queue, try executor services on either retrofit/rxjava
             // TODO server will now return 4-20min audio files, however having large file causes OOM
@@ -83,18 +79,7 @@ public class MediaGridPresenter implements PermissionManager.PermissionCallback 
         }
     }
 
-    public void handlePermissionResponse(int requestCode, int[] grantResults) {
-        permissionManager.handleResponse(requestCode, grantResults);
-    }
-
-    @Override
-    public void onPermissionGranted(int requestCode) {
-        requestCount++;
-        downloadMediaItem(requestCode, model.getGrid().get(requestCode));
-    }
-
-    @Override
-    public void onPermissionDenied() {
+    public void downloadMediaItemDenied() {
         view.showToast("In order to save media files to disk, permission must be turned on");
     }
 

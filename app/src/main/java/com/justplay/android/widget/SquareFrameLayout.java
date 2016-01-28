@@ -1,4 +1,4 @@
-package com.justplay.android.view.widget;
+package com.justplay.android.widget;
 
 import android.annotation.TargetApi;
 import android.content.Context;
