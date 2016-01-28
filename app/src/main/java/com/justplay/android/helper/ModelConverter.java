@@ -1,5 +1,7 @@
 package com.justplay.android.helper;
 
+import android.support.annotation.NonNull;
+
 import com.justplay.android.mediagrid.model.MediaGridViewModel;
 import com.justplay.android.mediagrid.model.MediaItemViewModel;
 import com.justplay.android.network.response.SearchResponse;
@@ -9,7 +11,7 @@ import java.util.List;
 
 public class ModelConverter {
 
-    public MediaGridViewModel toViewModel(MediaGridViewModel model, List<SearchResponse> searchResponseList) {
+    public MediaGridViewModel toViewModel(@NonNull MediaGridViewModel model, @NonNull List<SearchResponse> searchResponseList) {
         List<MediaItemViewModel> items = new ArrayList<>();
         int size = searchResponseList.size();
         for (int i = 0; i < size; i++) {
@@ -20,7 +22,7 @@ public class ModelConverter {
         return model;
     }
 
-    public MediaGridViewModel toViewModel(MediaGridViewModel model, Throwable throwable) {
+    public MediaGridViewModel toViewModel(@NonNull MediaGridViewModel model, @NonNull Throwable throwable) {
         model.setErrorMessage(throwable.getLocalizedMessage());
         return model;
     }

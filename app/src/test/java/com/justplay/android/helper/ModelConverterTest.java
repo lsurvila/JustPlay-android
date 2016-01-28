@@ -10,7 +10,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ModelConverterTest {
 
@@ -31,7 +31,7 @@ public class ModelConverterTest {
 
         viewModel = modelConverter.toViewModel(viewModel, searchResponseList);
 
-        assertTrue(viewModel.isSuccessful());
+        assertThat(viewModel.isSuccessful()).isTrue();
         assertMediaItemViewModel("34", "Adele - Hello", "https://i.ytimg.com/vi/Nck6BZga7TQ/hqdefault.jpg", viewModel.getGrid().get(0));
         assertMediaItemViewModel("12", "Taylor Swift - Shake it Off", "https://i.ytimg.com/vi/NkBZwer/hqdefault.jpg", viewModel.getGrid().get(1));
         assertMediaItemViewModel("443", "Dreams", "https://i.ytimg.com/vi/df3411/hqdefault.jpg", viewModel.getGrid().get(2));
@@ -45,14 +45,15 @@ public class ModelConverterTest {
 
         viewModel = modelConverter.toViewModel(viewModel, throwable);
 
-        assertFalse(viewModel.isSuccessful());
-        assertEquals("Some Error", viewModel.getErrorMessage());
+        assertThat(viewModel.isSuccessful()).isFalse();
+        assertThat(viewModel.getErrorMessage()).isEqualTo("Some Error");
     }
 
     private static void assertMediaItemViewModel(String id, String title, String imageUrl, MediaItemViewModel model) {
-        assertEquals(id, model.getId());
-        assertEquals(title, model.getTitle());
-        assertEquals(imageUrl, model.getImageUrl());
+        assertThat(model.getId()).isEqualTo(id);
+        assertThat(model.getTitle()).isEqualTo(title);
+        assertThat(model.getImageUrl()).isEqualTo(imageUrl);
     }
+
 
 }
