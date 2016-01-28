@@ -108,7 +108,7 @@ public class MainActivityFragment extends Fragment implements OnItemClickListene
     }
 
     public void searchMediaOnSubmit(Observable<SearchViewQueryTextEvent> queryTextEvents) {
-        presenter.searchMediaOnSubmit(queryTextEvents);
+        presenter.searchMediaFromSearchView(queryTextEvents);
     }
 
     @Override

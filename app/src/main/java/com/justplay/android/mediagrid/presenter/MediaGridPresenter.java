@@ -42,6 +42,39 @@ public class MediaGridPresenter {
         view = null;
     }
 
+    public void searchMediaFromSearchView(Observable<SearchViewQueryTextEvent> queryTextEvents) {
+        subscription.add(queryTextEvents
+                .flatMap(event -> searchMediaOnSubmit(event.isSubmitted(), event.queryText().toString()))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(model -> {
+                    view.hideProgressBar();
+                    view.showGrid();
+                    model.setSearching(false);
+                    if (model.isSuccessful()) {
+                        view.updateGrid(model.getGrid());
+                    } else {
+                        view.showToast(model.getErrorMessage());
+                    }
+                }));
+    }
+
+    Observable<MediaGridViewModel> searchMediaOnSubmit(boolean isSubmitted, String text) {
+        if (isSubmitted) {
+            view.showProgressBar();
+            view.hideGrid();
+            model.setSearching(true);
+            return searchMedia(text);
+        }
+        return Observable.empty();
+    }
+
+    private Observable<MediaGridViewModel> searchMedia(String text) {
+        return api.search(text)
+                .map(items -> modelConverter.toViewModel(model, items))
+                .onErrorResumeNext(throwable -> Observable.just(modelConverter.toViewModel(model, throwable)))
+                .subscribeOn(Schedulers.io());
+    }
+
     private void downloadMediaItem(int position, MediaItemViewModel item) {
         item.setIsDownloading(true);
         view.invalidateItemState(position);
@@ -81,35 +114,6 @@ public class MediaGridPresenter {
 
     public void downloadMediaItemDenied() {
         view.showToast("In order to save media files to disk, permission must be turned on");
-    }
-
-    public void searchMediaOnSubmit(Observable<SearchViewQueryTextEvent> queryTextEvents) {
-        subscription.add(queryTextEvents
-                .flatMap(this::performSearchOnSubmit)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(model -> {
-                    view.hideProgressBar();
-                    view.showGrid();
-                    model.setSearching(false);
-                    if (model.isSuccessful()) {
-                        view.updateGrid(model.getGrid());
-                    } else {
-                        view.showToast(model.getErrorMessage());
-                    }
-                }));
-    }
-
-    private Observable<MediaGridViewModel> performSearchOnSubmit(SearchViewQueryTextEvent event) {
-        if (event.isSubmitted()) {
-            view.showProgressBar();
-            view.hideGrid();
-            model.setSearching(true);
-            return api.search(event.queryText().toString())
-                    .map(items -> modelConverter.toViewModel(model, items))
-                    .onErrorResumeNext(throwable -> Observable.just(modelConverter.toViewModel(model, throwable)))
-                    .subscribeOn(Schedulers.io());
-        }
-        return Observable.empty();
     }
 
     public void restoreViewState() {
