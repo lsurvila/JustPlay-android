@@ -2,51 +2,35 @@ package com.justplay.android.helper;
 
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
+
+import javax.inject.Inject;
 
 public class PermissionManager {
 
-    private static final String PERMISSION = android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+    private final AndroidPermissionChecker permissionChecker;
 
     private PermissionCallback callback;
-    private Fragment fragment;
-    private AppCompatActivity activity;
 
-    public void setCallback(Object fragmentOrActivity) {
-        if (fragmentOrActivity instanceof Fragment) {
-            fragment = (Fragment) fragmentOrActivity;
-        } else if (fragmentOrActivity instanceof AppCompatActivity) {
-            activity = (AppCompatActivity) fragmentOrActivity;
-        }
-        if (fragmentOrActivity instanceof PermissionCallback) {
-            callback = (PermissionCallback) fragmentOrActivity;
-        }
+    @Inject
+    public PermissionManager(AndroidPermissionChecker permissionChecker) {
+        this.permissionChecker = permissionChecker;
     }
 
-    /**
-     * pass result from onRequestPermissionsResult to handleResponse.
-     */
+    public void setCallback(PermissionCallback permissionCallback) {
+        callback = permissionCallback;
+        permissionChecker.setFragmentOrActivity(callback);
+    }
+
     public void requestPermissionIfNeeded(int requestCode) {
-        int permissionCheck = ContextCompat.checkSelfPermission(fragment.getActivity(), PERMISSION);
+        int permissionCheck = permissionChecker.checkSelfPermission();
         if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
             callback.onPermissionGranted(requestCode);
         } else {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(fragment.getActivity(), PERMISSION)) {
+            if (permissionChecker.shouldShowPermissionRationale()) {
                 callback.onPermissionDenied();
             } else {
-                requestPermission(requestCode);
+                permissionChecker.requestPermission(requestCode);
             }
-        }
-    }
-
-    private void requestPermission(int requestCode) {
-        if (fragment != null) {
-            fragment.requestPermissions(new String[]{PERMISSION}, requestCode);
-        } else if (activity != null) {
-            ActivityCompat.requestPermissions(activity, new String[]{PERMISSION}, requestCode);
         }
     }
 

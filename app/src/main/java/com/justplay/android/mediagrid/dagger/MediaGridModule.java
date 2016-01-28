@@ -1,5 +1,6 @@
 package com.justplay.android.mediagrid.dagger;
 
+import com.justplay.android.helper.AndroidPermissionChecker;
 import com.justplay.android.mediagrid.model.MediaGridViewModel;
 import com.justplay.android.helper.ModelConverter;
 import com.justplay.android.helper.PermissionManager;
@@ -19,8 +20,13 @@ public class MediaGridModule {
     }
 
     @Provides @MediaScope
-    PermissionManager providePermissionManager() {
-        return new PermissionManager();
+    AndroidPermissionChecker permissionChecker() {
+        return new AndroidPermissionChecker();
+    }
+
+    @Provides @MediaScope
+    PermissionManager providePermissionManager(AndroidPermissionChecker permissionChecker) {
+        return new PermissionManager(permissionChecker);
     }
 
     @Provides @MediaScope
