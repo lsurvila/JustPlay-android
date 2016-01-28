@@ -195,9 +195,12 @@ public class MainActivityFragment extends Fragment implements OnItemClickListene
         onDestroyCalled = true;
         if (onSaveInstanceCalled) {
             // in case view is destroyed by system, we should preserve presenter (with ongoing operations) and unbind view (as a new one will be provided)
+            presenter.unbindView();
             presenterCache.savePresenter(presenter);
         } else {
             // in case view is destroyed by user (like back pressed), we should remove presenter (with ongoing operations)
+            presenter.unsubscribe();
+            presenter.unbindView();
             presenterCache.removePresenter();
         }
         super.onDestroy();
