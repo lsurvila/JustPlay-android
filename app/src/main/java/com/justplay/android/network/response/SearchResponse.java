@@ -13,6 +13,12 @@ public class SearchResponse {
     @Expose
     private String imageUrl;
 
+    public SearchResponse(String id, String title, String imageUrl) {
+        this.id = id;
+        this.title = title;
+        this.imageUrl = imageUrl;
+    }
+
     public String getId() {
         return id;
     }
