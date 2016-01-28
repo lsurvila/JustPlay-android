@@ -6,8 +6,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PermissionManagerTest {
@@ -29,33 +31,33 @@ public class PermissionManagerTest {
     @Test
     public void shouldPermissionGrantedBeCalled() throws Exception {
         int requestCode = 10;
-        Mockito.when(permissionChecker.checkSelfPermission()).thenReturn(PackageManager.PERMISSION_GRANTED);
+        when(permissionChecker.checkSelfPermission()).thenReturn(PackageManager.PERMISSION_GRANTED);
 
         permissionManager.requestPermissionIfNeeded(requestCode);
 
-        Mockito.verify(callback).onPermissionGranted(10);
+        verify(callback).onPermissionGranted(10);
     }
 
     @Test
     public void shouldPermissionDeniedBeCalledIfRationale() throws Exception {
         int requestCode = 11;
-        Mockito.when(permissionChecker.checkSelfPermission()).thenReturn(PackageManager.PERMISSION_DENIED);
-        Mockito.when(permissionChecker.shouldShowPermissionRationale()).thenReturn(true);
+        when(permissionChecker.checkSelfPermission()).thenReturn(PackageManager.PERMISSION_DENIED);
+        when(permissionChecker.shouldShowPermissionRationale()).thenReturn(true);
 
         permissionManager.requestPermissionIfNeeded(requestCode);
 
-        Mockito.verify(callback).onPermissionDenied();
+        verify(callback).onPermissionDenied();
     }
 
     @Test
     public void shouldPermissionIsRequestedIfNotRationale() throws Exception {
         int requestCode = 12;
-        Mockito.when(permissionChecker.checkSelfPermission()).thenReturn(PackageManager.PERMISSION_DENIED);
-        Mockito.when(permissionChecker.shouldShowPermissionRationale()).thenReturn(false);
+        when(permissionChecker.checkSelfPermission()).thenReturn(PackageManager.PERMISSION_DENIED);
+        when(permissionChecker.shouldShowPermissionRationale()).thenReturn(false);
 
         permissionManager.requestPermissionIfNeeded(requestCode);
 
-        Mockito.verify(permissionChecker).requestPermission(12);
+        verify(permissionChecker).requestPermission(12);
     }
 
     @Test
@@ -65,7 +67,7 @@ public class PermissionManagerTest {
 
         permissionManager.handleResponse(requestCode, grantResults);
 
-        Mockito.verify(callback).onPermissionGranted(13);
+        verify(callback).onPermissionGranted(13);
     }
 
     @Test
@@ -75,7 +77,7 @@ public class PermissionManagerTest {
 
         permissionManager.handleResponse(requestCode, grantResults);
 
-        Mockito.verify(callback).onPermissionDenied();
+        verify(callback).onPermissionDenied();
     }
 
     @Test
@@ -85,7 +87,7 @@ public class PermissionManagerTest {
 
         permissionManager.handleResponse(requestCode, grantResults);
 
-        Mockito.verify(callback).onPermissionDenied();
+        verify(callback).onPermissionDenied();
     }
 
 }
