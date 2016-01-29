@@ -114,7 +114,6 @@ public class MediaGridPresenter {
 
 
     public void unsubscribe() {
-        view.showToast("Cancelling requests");
         subscription.unsubscribe();
     }
 
