@@ -1,15 +1,15 @@
 package com.justplay.android.mediagrid.dagger;
 
+import com.justplay.android.external.repository.MediaGridRepository;
 import com.justplay.android.helper.AndroidPermissionChecker;
 import com.justplay.android.mediagrid.model.MediaGridViewModel;
-import com.justplay.android.helper.ModelConverter;
 import com.justplay.android.helper.PermissionManager;
 import com.justplay.android.mediagrid.presenter.MediaGridPresenter;
-import com.justplay.android.network.JustPlayApi;
 import com.justplay.android.mediagrid.view.adapter.MediaItemAdapter;
 
 import dagger.Module;
 import dagger.Provides;
+import rx.android.schedulers.AndroidSchedulers;
 
 @Module
 public class MediaGridModule {
@@ -35,8 +35,8 @@ public class MediaGridModule {
     }
 
     @Provides @MediaScope
-    MediaGridPresenter provideMediaGridPresenter(MediaGridViewModel model, JustPlayApi api, ModelConverter modelConverter) {
-        return new MediaGridPresenter(model, api, modelConverter);
+    MediaGridPresenter provideMediaGridPresenter(MediaGridViewModel model, MediaGridRepository repository) {
+        return new MediaGridPresenter(model, repository, AndroidSchedulers.mainThread());
     }
 
 }

@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.justplay.android.mediagrid.model.MediaGridViewModel;
 import com.justplay.android.mediagrid.model.MediaItemViewModel;
-import com.justplay.android.network.response.SearchResponse;
+import com.justplay.android.external.network.response.SearchResponse;
 
 import java.util.ArrayList;
 import java.util.List;

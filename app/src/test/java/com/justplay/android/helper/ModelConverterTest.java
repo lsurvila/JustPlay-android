@@ -2,7 +2,7 @@ package com.justplay.android.helper;
 
 import com.justplay.android.mediagrid.model.MediaGridViewModel;
 import com.justplay.android.mediagrid.model.MediaItemViewModel;
-import com.justplay.android.network.response.SearchResponse;
+import com.justplay.android.external.network.response.SearchResponse;
 
 import org.junit.Before;
 import org.junit.Test;

@@ -33,6 +33,7 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 
 public class MainActivityFragment extends Fragment implements OnItemClickListener, MediaGridView, PermissionManager.PermissionCallback {
 
@@ -95,7 +96,7 @@ public class MainActivityFragment extends Fragment implements OnItemClickListene
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         // we restore view state (either new or restored presenter, we bind existing data to view from preserved model inside presenter)
-        presenter.restoreViewState();
+        presenter.updateViewState();
     }
 
     @Override
@@ -108,7 +109,12 @@ public class MainActivityFragment extends Fragment implements OnItemClickListene
     }
 
     public void searchMediaOnSubmit(Observable<SearchViewQueryTextEvent> queryTextEvents) {
-        presenter.searchMediaFromSearchView(queryTextEvents);
+        presenter.searchMedia(queryTextEvents.flatMap(searchViewQueryTextEvent -> {
+            if (searchViewQueryTextEvent.isSubmitted()) {
+                return Observable.just(searchViewQueryTextEvent.queryText().toString());
+            }
+            return Observable.empty();
+        }).observeOn(AndroidSchedulers.mainThread()));
     }
 
     @Override
@@ -152,24 +158,16 @@ public class MainActivityFragment extends Fragment implements OnItemClickListene
     }
 
     @Override
-    public void showProgressBar() {
-        callback.onMediaSearchRequested();
-        progressBar.setVisibility(View.VISIBLE);
+    public void setProgressBarVisible(boolean visible) {
+        if (visible) {
+            callback.onMediaSearchRequested();
+        }
+        progressBar.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     @Override
-    public void hideProgressBar() {
-        progressBar.setVisibility(View.GONE);
-    }
-
-    @Override
-    public void showGrid() {
-        mediaGrid.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void hideGrid() {
-        mediaGrid.setVisibility(View.GONE);
+    public void setGridVisible(boolean visible) {
+        mediaGrid.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     @Override

@@ -2,7 +2,7 @@ package com.justplay.android.dagger;
 
 import com.justplay.android.helper.ModelConverter;
 import com.justplay.android.helper.PresenterCache;
-import com.justplay.android.network.JustPlayApi;
+import com.justplay.android.external.network.JustPlayApi;
 
 import javax.inject.Singleton;
 

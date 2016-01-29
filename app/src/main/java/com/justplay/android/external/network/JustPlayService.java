@@ -1,6 +1,6 @@
-package com.justplay.android.network;
+package com.justplay.android.external.network;
 
-import com.justplay.android.network.response.SearchResponse;
+import com.justplay.android.external.network.response.SearchResponse;
 import com.squareup.okhttp.ResponseBody;
 
 import java.util.List;

@@ -1,17 +1,17 @@
-package com.justplay.android.network.response;
+package com.justplay.android.external.network.response;
 
 import com.google.gson.annotations.Expose;
 
 public class SearchResponse {
 
     @Expose
-    private String id;
+    private final String id;
 
     @Expose
-    private String title;
+    private final String title;
 
     @Expose
-    private String imageUrl;
+    private final String imageUrl;
 
     public SearchResponse(String id, String title, String imageUrl) {
         this.id = id;

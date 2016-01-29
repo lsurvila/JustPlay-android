@@ -1,16 +1,14 @@
 package com.justplay.android.mediagrid.presenter;
 
-import com.jakewharton.rxbinding.support.v7.widget.SearchViewQueryTextEvent;
+import com.justplay.android.external.repository.MediaGridRepository;
 import com.justplay.android.mediagrid.model.MediaGridViewModel;
 import com.justplay.android.mediagrid.model.MediaItemViewModel;
-import com.justplay.android.helper.ModelConverter;
-import com.justplay.android.network.JustPlayApi;
 import com.justplay.android.mediagrid.view.MediaGridView;
 
 import javax.inject.Inject;
 
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
+import rx.Scheduler;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
@@ -19,19 +17,19 @@ public class MediaGridPresenter {
     private static final int MAX_DOWNLOADS = 5;
     private MediaGridView view;
 
-    private final JustPlayApi api;
-    private final ModelConverter modelConverter;
     private final MediaGridViewModel model;
+    private final MediaGridRepository repository;
+    private final Scheduler observeOnScheduler;
 
     private final CompositeSubscription subscription = new CompositeSubscription();
 
     private int requestCount;
 
     @Inject
-    public MediaGridPresenter(MediaGridViewModel model, JustPlayApi api, ModelConverter modelConverter) {
+    public MediaGridPresenter(MediaGridViewModel model, MediaGridRepository repository, Scheduler observeOnScheduler) {
         this.model = model;
-        this.api = api;
-        this.modelConverter = modelConverter;
+        this.repository = repository;
+        this.observeOnScheduler = observeOnScheduler;
     }
 
     public void bindView(MediaGridView view) {
@@ -42,45 +40,26 @@ public class MediaGridPresenter {
         view = null;
     }
 
-    public void searchMediaFromSearchView(Observable<SearchViewQueryTextEvent> queryTextEvents) {
-        subscription.add(queryTextEvents
-                .flatMap(event -> searchMediaOnSubmit(event.isSubmitted(), event.queryText().toString()))
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(model -> {
-                    view.hideProgressBar();
-                    view.showGrid();
+    public void searchMedia(Observable<String> query) {
+        subscription.add(query
+                .flatMap(searchQuery -> {
+                    model.setSearching(true);
+                    updateViewVisibility();
+                    return repository.searchMedia(model, searchQuery);
+                })
+                .observeOn(observeOnScheduler)
+                .subscribe(result -> {
                     model.setSearching(false);
-                    if (model.isSuccessful()) {
-                        view.updateGrid(model.getGrid());
-                    } else {
-                        view.showToast(model.getErrorMessage());
-                    }
-                }));
-    }
-
-    Observable<MediaGridViewModel> searchMediaOnSubmit(boolean isSubmitted, String text) {
-        if (isSubmitted) {
-            view.showProgressBar();
-            view.hideGrid();
-            model.setSearching(true);
-            return searchMedia(text);
-        }
-        return Observable.empty();
-    }
-
-    private Observable<MediaGridViewModel> searchMedia(String text) {
-        return api.search(text)
-                .map(items -> modelConverter.toViewModel(model, items))
-                .onErrorResumeNext(throwable -> Observable.just(modelConverter.toViewModel(model, throwable)))
-                .subscribeOn(Schedulers.io());
+                    updateViewState();
+                }, Throwable::printStackTrace));
     }
 
     private void downloadMediaItem(int position, MediaItemViewModel item) {
         item.setIsDownloading(true);
         view.invalidateItemState(position);
-        subscription.add(api.download(item.getId())
+        subscription.add(repository.downloadVideo(item.getId())
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOn(observeOnScheduler)
                 .subscribe(file -> {
                     item.setIsDownloading(false);
                     if (view != null) {
@@ -116,16 +95,23 @@ public class MediaGridPresenter {
         view.showToast("In order to save media files to disk, permission must be turned on");
     }
 
-    public void restoreViewState() {
-        if (model.isSearching()) {
-            view.showProgressBar();
-            view.hideGrid();
-        } else {
-            view.hideProgressBar();
-            view.showGrid();
-            view.updateGrid(model.getGrid());
+
+    public void updateViewState() {
+        if (view != null) {
+            updateViewVisibility();
+            if (model.isSuccessful()) {
+                view.updateGrid(model.getGrid());
+            } else {
+                view.showToast(model.getErrorMessage());
+            }
         }
     }
+
+    private void updateViewVisibility() {
+        view.setProgressBarVisible(model.isSearching());
+        view.setGridVisible(!model.isSearching());
+    }
+
 
     public void unsubscribe() {
         view.showToast("Cancelling requests");

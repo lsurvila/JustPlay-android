@@ -1,9 +1,10 @@
 package com.justplay.android.dagger;
 
 import com.justplay.android.JustPlayApplication;
+import com.justplay.android.external.repository.MediaGridRepository;
 import com.justplay.android.helper.ModelConverter;
 import com.justplay.android.helper.PresenterCache;
-import com.justplay.android.network.JustPlayApi;
+import com.justplay.android.external.network.JustPlayApi;
 
 import javax.inject.Singleton;
 
@@ -32,6 +33,11 @@ public class ApplicationModule {
     @Provides @Singleton
     ModelConverter provideModelConverter() {
         return new ModelConverter();
+    }
+
+    @Provides @Singleton
+    MediaGridRepository provideMediaGridRepository(JustPlayApi api, ModelConverter modelConverter) {
+        return new MediaGridRepository(api, modelConverter);
     }
 
     @Provides @Singleton
